@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { theme, categories } from './manifest';
-import { Battery, Wifi, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Battery, Wifi } from 'lucide-react';
 import './App.css';
 
 function StatusBar() {
@@ -31,89 +31,12 @@ function StatusBar() {
   );
 }
 
-function CategoryBar({ currentCategory, onCategoryChange }) {
-  const scrollRef = useRef(null);
-
-  const scroll = (direction) => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: direction * 200, behavior: 'smooth' });
-    }
-  };
-
-  return (
-    <div className="category-bar-container">
-      <button className="category-scroll category-scroll-left" onClick={() => scroll(-1)}>
-        <ChevronLeft size={20} />
-      </button>
-      <div className="category-bar" ref={scrollRef}>
-        {categories.map((cat, index) => {
-          const Icon = cat.icon;
-          return (
-            <button
-              key={cat.id}
-              className={`category-item ${currentCategory === index ? 'active' : ''}`}
-              onClick={() => onCategoryChange(index)}
-            >
-              <Icon size={28} />
-              <span className="category-label">{cat.label}</span>
-            </button>
-          );
-        })}
-      </div>
-      <button className="category-scroll category-scroll-right" onClick={() => scroll(1)}>
-        <ChevronRight size={20} />
-      </button>
-    </div>
-  );
-}
-
-function IconGrid({ items, selectedIndex, onSelect, onActivate }) {
-  const gridRef = useRef(null);
-
-  useEffect(() => {
-    if (gridRef.current) {
-      const selected = gridRef.current.querySelector('.icon-item.selected');
-      if (selected) {
-        selected.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-      }
-    }
-  }, [selectedIndex]);
-
-  if (!items || items.length === 0) {
-    return <div className="empty-message">No items</div>;
-  }
-
-  return (
-    <div className="icon-grid" ref={gridRef}>
-      {items.map((item, index) => {
-        const Icon = item.icon;
-        return (
-          <button
-            key={item.id}
-            className={`icon-item ${selectedIndex === index ? 'selected' : ''}`}
-            onClick={() => onActivate(index)}
-            onFocus={() => onSelect(index)}
-          >
-            <div className="icon-wrapper">
-              <Icon size={36} />
-            </div>
-            <span className="icon-label">{item.label}</span>
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
 function DetailPanel({ item, onClose }) {
   if (!item) return null;
 
   return (
     <div className="detail-panel-overlay" onClick={onClose}>
       <div className="detail-panel" onClick={(e) => e.stopPropagation()}>
-        <button className="detail-close" onClick={onClose}>
-          <X size={24} />
-        </button>
         <div className="detail-icon">
           <item.icon size={64} />
         </div>
@@ -123,9 +46,6 @@ function DetailPanel({ item, onClose }) {
         )}
         {item.action?.date && (
           <p className="detail-date">{item.action.date}</p>
-        )}
-        {item.action?.type === 'media' && item.action.contentType !== 'webgl' && (
-          <div className="detail-action-hint">Press Enter to play</div>
         )}
       </div>
     </div>
@@ -172,7 +92,7 @@ function MediaPlayer({ item, onClose }) {
     <div className="media-player-overlay">
       <div className="media-player">
         <button className="media-close" onClick={onClose}>
-          <X size={28} />
+          <span>✕</span>
         </button>
         <h3 className="media-title">{item.label}</h3>
         <div className="media-content">{renderContent()}</div>
@@ -187,19 +107,33 @@ function App() {
   const [activeItem, setActiveItem] = useState(null);
   const [showMedia, setShowMedia] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
+  const [menuOffset, setMenuOffset] = useState({ x: 0, y: 0 });
 
   const currentItems = categories[currentCategory]?.items || [];
+  const columnsPerRow = 5;
+
+  const updateMenuOffset = useCallback((newCategory, newIndex) => {
+    const newOffsetX = -newCategory * 100;
+    const newOffsetY = -newIndex * 76;
+    setMenuOffset({ x: newOffsetX, y: newOffsetY });
+  }, []);
 
   const handleCategoryChange = useCallback((index) => {
-    setCurrentCategory(index);
-    setSelectedIndex(0);
-  }, []);
+    if (index >= 0 && index < categories.length) {
+      setCurrentCategory(index);
+      setSelectedIndex(0);
+      updateMenuOffset(index, 0);
+    }
+  }, [updateMenuOffset]);
 
-  const handleIconSelect = useCallback((index) => {
-    setSelectedIndex(index);
-  }, []);
+  const handleItemSelect = useCallback((index) => {
+    if (index >= 0 && index < currentItems.length) {
+      setSelectedIndex(index);
+      updateMenuOffset(currentCategory, index);
+    }
+  }, [currentCategory, currentItems.length, updateMenuOffset]);
 
-  const handleIconActivate = useCallback((index) => {
+  const handleActivate = useCallback((index) => {
     const item = currentItems[index];
     if (!item) return;
 
@@ -238,24 +172,24 @@ function App() {
         }
         break;
       case 'ArrowUp':
-        if (selectedIndex >= 5) {
-          setSelectedIndex(selectedIndex - 5);
+        if (selectedIndex > 0) {
+          handleItemSelect(selectedIndex - 1);
         }
         break;
       case 'ArrowDown':
-        if (selectedIndex + 5 < currentItems.length) {
-          setSelectedIndex(selectedIndex + 5);
+        if (selectedIndex < currentItems.length - 1) {
+          handleItemSelect(selectedIndex + 1);
         }
         break;
       case 'Enter':
         if (currentItems[selectedIndex]) {
-          handleIconActivate(selectedIndex);
+          handleActivate(selectedIndex);
         }
         break;
       default:
         break;
     }
-  }, [currentCategory, selectedIndex, currentItems, showMedia, showDetails, handleCategoryChange, handleIconActivate, handleBack]);
+  }, [currentCategory, selectedIndex, currentItems, showMedia, showDetails, handleCategoryChange, handleItemSelect, handleActivate, handleBack]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
@@ -263,32 +197,60 @@ function App() {
   }, [handleKeyDown]);
 
   useEffect(() => {
-    setSelectedIndex(0);
-  }, [currentCategory]);
+    updateMenuOffset(currentCategory, selectedIndex);
+  }, []);
 
   return (
     <div className="app">
       <StatusBar />
       
-      <div className="main-content">
-        <div className="category-label-container">
-          <span className="category-label-text">
-            {categories[currentCategory]?.label}
-          </span>
+      <div className="xmb-container">
+        <div className="menu-layer" style={{ transform: `translate(${menuOffset.x}vw, ${menuOffset.y}px)` }}>
+          {categories.map((cat, catIndex) => {
+            const CatIcon = cat.icon;
+            return (
+              <div key={cat.id} className="category-column" data-category-index={catIndex}>
+                <div className={`category-icon ${currentCategory === catIndex ? 'active' : ''}`}>
+                  <CatIcon size={48} />
+                </div>
+                
+                <div className="items-column">
+                  {cat.items.map((item, itemIndex) => {
+                    const ItemIcon = item.icon;
+                    return (
+                      <button
+                        key={item.id}
+                        className={`item-icon ${currentCategory === catIndex && selectedIndex === itemIndex ? 'selected' : ''}`}
+                        onClick={() => {
+                          handleCategoryChange(catIndex);
+                          handleItemSelect(itemIndex);
+                        }}
+                        onDoubleClick={() => {
+                          handleCategoryChange(catIndex);
+                          handleItemSelect(itemIndex);
+                          handleActivate(itemIndex);
+                        }}
+                      >
+                        <div className="item-icon-wrapper">
+                          <ItemIcon size={32} />
+                        </div>
+                        <span className="item-label">{item.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
         </div>
-        
-        <IconGrid
-          items={currentItems}
-          selectedIndex={selectedIndex}
-          onSelect={handleIconSelect}
-          onActivate={handleIconActivate}
-        />
-      </div>
 
-      <CategoryBar
-        currentCategory={currentCategory}
-        onCategoryChange={handleCategoryChange}
-      />
+        <div className="reticle">
+          <div className="reticle-corner reticle-tl"></div>
+          <div className="reticle-corner reticle-tr"></div>
+          <div className="reticle-corner reticle-bl"></div>
+          <div className="reticle-corner reticle-br"></div>
+        </div>
+      </div>
 
       {showDetails && activeItem && (
         <DetailPanel item={activeItem} onClose={handleBack} />
