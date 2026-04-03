@@ -1,0 +1,71 @@
+.quit-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: #1a1a2e;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 300;
+  animation: fadeIn 150ms ease;
+  outline: none;
+}
+
+.quit-dialog-overlay .status-bar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: auto;
+}
+
+.quit-dialog {
+  text-align: center;
+  padding: 40px;
+}
+
+.quit-dialog-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 40px;
+  color: #ffffff;
+  letter-spacing: 2px;
+}
+
+.quit-dialog-message {
+  font-size: 18px;
+  color: #ffffff;
+  margin-bottom: 48px;
+}
+
+.quit-dialog-options {
+  display: flex;
+  justify-content: center;
+  gap: 48px;
+}
+
+.quit-option {
+  background: transparent;
+  border: none;
+  padding: 12px 24px;
+  font-size: 16px;
+  color: #8888aa;
+  cursor: pointer;
+  transition: all 120ms ease;
+  position: relative;
+}
+
+.quit-option.selected {
+  color: #ffffff;
+}
+
+.quit-option.selected::before {
+  content: '▶';
+  position: absolute;
+  left: -4px;
+  color: #ffcc00;
+  font-size: 14px;
+}
+
+.quit-option:active {
+  transform: scale(0.95);
+}

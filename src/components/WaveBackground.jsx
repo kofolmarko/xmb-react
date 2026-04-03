@@ -1,0 +1,67 @@
+import { useRef, useEffect } from 'react';
+import '../styles/WaveBackground.css';
+
+export function WaveBackground() {
+  const canvasRef = useRef(null);
+  const tRef = useRef(0);
+  const frameRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    function waveY(x, w, phase, amplitude, freq) {
+      const nx = x / w;
+      return Math.sin(nx * freq + phase) * amplitude
+        + Math.sin(nx * freq * 0.5 + phase * 1.2) * amplitude * 0.5
+        + Math.sin(nx * freq * 0.3 + phase * 0.6) * amplitude * 0.3;
+    }
+
+    function drawWave(phase, yBase, amplitude, freq, color, alpha) {
+      const w = canvas.width, h = canvas.height;
+      ctx.beginPath();
+      ctx.moveTo(0, h);
+      for (let x = 0; x <= w; x++) {
+        ctx.lineTo(x, yBase + waveY(x, w, phase, amplitude, freq));
+      }
+      ctx.lineTo(w, h);
+      ctx.closePath();
+      ctx.fillStyle = color + Math.round(alpha * 255).toString(16).padStart(2, '0');
+      ctx.fill();
+    }
+
+    function frame() {
+      frameRef.current = requestAnimationFrame(frame);
+      tRef.current += 0.002;
+      resize();
+      const w = canvas.width, h = canvas.height;
+
+      const bgGrad = ctx.createLinearGradient(0, 0, 0, h);
+      bgGrad.addColorStop(0, '#0a0e2a');
+      bgGrad.addColorStop(1, '#0d1b3e');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, w, h);
+
+      const yBase = h * 0.55;
+      const amp = h * 0.15;
+
+      drawWave(tRef.current * 0.8, yBase, amp, 2.0, '#1a3a6e', 0.5);
+      drawWave(tRef.current + 1.5, yBase + amp * 0.4, amp * 0.8, 1.8, '#102850', 0.6);
+    }
+
+    resize();
+    frameRef.current = requestAnimationFrame(frame);
+
+    return () => {
+      if (frameRef.current) cancelAnimationFrame(frameRef.current);
+    };
+  }, []);
+
+  return <canvas ref={canvasRef} className="wave-bg" />;
+}
