@@ -1,7 +1,10 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { theme, categories } from './manifest';
 import { Battery, Wifi } from 'lucide-react';
 import './App.css';
+
+const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
 function StatusBar() {
   const [time, setTime] = useState(new Date());
@@ -11,23 +14,33 @@ function StatusBar() {
     return () => clearInterval(timer);
   }, []);
 
-  const hours = time.getHours().toString().padStart(2, '0');
+  const day = DAYS[time.getDay()];
+  const date = time.getDate();
+  const month = MONTHS[time.getMonth()];
+  const hours = time.getHours();
   const minutes = time.getMinutes().toString().padStart(2, '0');
+  const seconds = time.getSeconds().toString().padStart(2, '0');
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const h12 = (hours % 12 || 12).toString().padStart(2, '0');
 
   return (
     <div className="status-bar">
-      <div className="status-left">
-        <span className="clock">{hours}:{minutes}</span>
-      </div>
-      <div className="status-center">
-        <Battery size={20} fill={theme.colors.iconActive} stroke={theme.colors.iconActive} />
-        <span className="battery-text">87%</span>
-      </div>
-      <div className="status-right">
-        <Wifi size={18} fill={theme.colors.iconActive} stroke={theme.colors.iconActive} />
-        <span className="wifi-text">Good</span>
-      </div>
+      <span className="status-date">{day}, {date} {month} {h12}:{minutes}:{seconds} {ampm}</span>
+      <span className="status-battery">
+        <Battery size={14} fill="currentColor" stroke="currentColor" />
+        87%
+      </span>
+      <Wifi size={14} fill="currentColor" stroke="currentColor" />
     </div>
+  );
+}
+
+function SplashBackground({ splashArt }) {
+  return (
+    <div
+      className={`splash-bg ${splashArt ? 'visible' : ''}`}
+      style={splashArt ? { backgroundImage: `url(${splashArt})` } : undefined}
+    />
   );
 }
 
@@ -101,154 +114,239 @@ function MediaPlayer({ item, onClose }) {
   );
 }
 
+const CATEGORY_WIDTH = 100;
+const ITEM_HEIGHT = 52;
+const CATEGORY_HEIGHT = 72;
+
 function App() {
   const [currentCategory, setCurrentCategory] = useState(0);
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedIndices, setSelectedIndices] = useState(() => categories.map(cat => cat.defaultIndex ?? 0));
+  const [isSwitchingCategory, setIsSwitchingCategory] = useState(false);
   const [activeItem, setActiveItem] = useState(null);
   const [showMedia, setShowMedia] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
-  const [menuOffset, setMenuOffset] = useState({ x: 0, y: 0 });
 
+  // Sub-menu state
+  const [subMenuOpen, setSubMenuOpen] = useState(false);
+  const [subMenuIndex, setSubMenuIndex] = useState(0);
+
+  const selectedIndex = selectedIndices[currentCategory];
   const currentItems = categories[currentCategory]?.items || [];
-  const columnsPerRow = 5;
+  const focusedItem = currentItems[selectedIndex];
 
-  const updateMenuOffset = useCallback((newCategory, newIndex) => {
-    const newOffsetX = -newCategory * 100;
-    const newOffsetY = -newIndex * 76;
-    setMenuOffset({ x: newOffsetX, y: newOffsetY });
+  const handleCategoryChange = useCallback((direction) => {
+    setSubMenuOpen(false);
+    setIsSwitchingCategory(true);
+    setCurrentCategory(prev => {
+      const next = prev + direction;
+      if (next < 0) return categories.length - 1;
+      if (next >= categories.length) return 0;
+      return next;
+    });
   }, []);
 
-  const handleCategoryChange = useCallback((index) => {
-    if (index >= 0 && index < categories.length) {
-      setCurrentCategory(index);
-      setSelectedIndex(0);
-      updateMenuOffset(index, 0);
+  const handleItemSelect = useCallback((direction) => {
+    if (subMenuOpen) {
+      const subItems = focusedItem?.subItems || [];
+      setSubMenuIndex(prev => {
+        const next = prev + direction;
+        if (next < 0) return subItems.length - 1;
+        if (next >= subItems.length) return 0;
+        return next;
+      });
+      return;
     }
-  }, [updateMenuOffset]);
+    setIsSwitchingCategory(false);
+    setSelectedIndices(prev => {
+      const next = prev[currentCategory] + direction;
+      const len = categories[currentCategory].items.length;
+      const clamped = next < 0 ? len - 1 : next >= len ? 0 : next;
+      const updated = [...prev];
+      updated[currentCategory] = clamped;
+      return updated;
+    });
+  }, [currentCategory, subMenuOpen, focusedItem]);
 
-  const handleItemSelect = useCallback((index) => {
-    if (index >= 0 && index < currentItems.length) {
-      setSelectedIndex(index);
-      updateMenuOffset(currentCategory, index);
+  const handleActivate = useCallback(() => {
+    if (subMenuOpen) {
+      const subItem = focusedItem?.subItems?.[subMenuIndex];
+      if (!subItem) return;
+      setActiveItem(subItem);
+      if (subItem.action?.type === 'media') {
+        setShowMedia(subItem);
+      } else {
+        setShowDetails(true);
+      }
+      return;
     }
-  }, [currentCategory, currentItems.length, updateMenuOffset]);
 
-  const handleActivate = useCallback((index) => {
-    const item = currentItems[index];
+    const item = currentItems[selectedIndex];
     if (!item) return;
 
+    if (item.subItems?.length) {
+      setSubMenuOpen(true);
+      setSubMenuIndex(0);
+      return;
+    }
+
     setActiveItem(item);
-    
     if (item.action?.type === 'media') {
       setShowMedia(item);
     } else {
       setShowDetails(true);
     }
-  }, [currentItems]);
+  }, [currentItems, selectedIndex, subMenuOpen, focusedItem, subMenuIndex]);
 
   const handleBack = useCallback(() => {
-    setShowDetails(false);
-    setShowMedia(null);
-    setActiveItem(null);
-  }, []);
+    if (showDetails || showMedia) {
+      setShowDetails(false);
+      setShowMedia(null);
+      setActiveItem(null);
+      return;
+    }
+    if (subMenuOpen) {
+      setSubMenuOpen(false);
+    }
+  }, [showDetails, showMedia, subMenuOpen]);
 
   const handleKeyDown = useCallback((e) => {
     if (showMedia || showDetails) {
-      if (e.key === 'Escape' || e.key === 'Backspace') {
-        handleBack();
-      }
+      if (e.key === 'Escape' || e.key === 'Backspace') handleBack();
       return;
     }
-
     switch (e.key) {
-      case 'ArrowLeft':
-        if (currentCategory > 0) {
-          handleCategoryChange(currentCategory - 1);
-        }
-        break;
-      case 'ArrowRight':
-        if (currentCategory < categories.length - 1) {
-          handleCategoryChange(currentCategory + 1);
-        }
-        break;
-      case 'ArrowUp':
-        if (selectedIndex > 0) {
-          handleItemSelect(selectedIndex - 1);
-        }
-        break;
-      case 'ArrowDown':
-        if (selectedIndex < currentItems.length - 1) {
-          handleItemSelect(selectedIndex + 1);
-        }
-        break;
-      case 'Enter':
-        if (currentItems[selectedIndex]) {
-          handleActivate(selectedIndex);
-        }
-        break;
-      default:
-        break;
+      case 'ArrowLeft':  handleCategoryChange(-1); break;
+      case 'ArrowRight': handleCategoryChange(1);  break;
+      case 'ArrowUp':    handleItemSelect(-1);      break;
+      case 'ArrowDown':  handleItemSelect(1);       break;
+      case 'Enter':      handleActivate();          break;
+      case 'Escape':
+      case 'Backspace':  handleBack();              break;
+      default: break;
     }
-  }, [currentCategory, selectedIndex, currentItems, showMedia, showDetails, handleCategoryChange, handleItemSelect, handleActivate, handleBack]);
+  }, [showMedia, showDetails, handleCategoryChange, handleItemSelect, handleActivate, handleBack]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
+  // Close sub-menu when item changes
   useEffect(() => {
-    updateMenuOffset(currentCategory, selectedIndex);
-  }, []);
+    setSubMenuOpen(false);
+  }, [selectedIndex, currentCategory]);
+
+  const splashArt = focusedItem?.splashArt ?? null;
 
   return (
     <div className="app">
+      <SplashBackground splashArt={splashArt} />
       <StatusBar />
-      
+
       <div className="xmb-container">
-        <div className="menu-layer" style={{ transform: `translate(${menuOffset.x}vw, ${menuOffset.y}px)` }}>
-          {categories.map((cat, catIndex) => {
-            const CatIcon = cat.icon;
-            return (
-              <div key={cat.id} className="category-column" data-category-index={catIndex}>
-                <div className={`category-icon ${currentCategory === catIndex ? 'active' : ''}`}>
-                  <CatIcon size={48} />
+        {/* Category Row */}
+        <div className="category-row">
+          <div
+            className="category-inner"
+            style={{
+              left: '20%',
+              transform: `translateX(-${currentCategory * CATEGORY_WIDTH}px)`
+            }}
+          >
+            {categories.map((cat, index) => {
+              const CatIcon = cat.icon;
+              return (
+                <div
+                  key={cat.id}
+                  className={`category-col ${currentCategory === index ? 'active' : ''}`}
+                >
+                  <div className="category-icon">
+                    <CatIcon size={32} />
+                  </div>
+                  <span className="category-label">{cat.label}</span>
                 </div>
-                
-                <div className="items-column">
-                  {cat.items.map((item, itemIndex) => {
-                    const ItemIcon = item.icon;
-                    return (
-                      <button
-                        key={item.id}
-                        className={`item-icon ${currentCategory === catIndex && selectedIndex === itemIndex ? 'selected' : ''}`}
-                        onClick={() => {
-                          handleCategoryChange(catIndex);
-                          handleItemSelect(itemIndex);
-                        }}
-                        onDoubleClick={() => {
-                          handleCategoryChange(catIndex);
-                          handleItemSelect(itemIndex);
-                          handleActivate(itemIndex);
-                        }}
-                      >
-                        <div className="item-icon-wrapper">
-                          <ItemIcon size={32} />
-                        </div>
-                        <span className="item-label">{item.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
 
-        <div className="reticle">
-          <div className="reticle-corner reticle-tl"></div>
-          <div className="reticle-corner reticle-tr"></div>
-          <div className="reticle-corner reticle-bl"></div>
-          <div className="reticle-corner reticle-br"></div>
+        {/* Items Column */}
+        <div className="items-row">
+          <div
+            className={`items-inner ${subMenuOpen ? 'sub-open' : ''}`}
+            style={{
+              left: '20%',
+              transform: `translateY(-${selectedIndex * ITEM_HEIGHT + (selectedIndex > 0 ? CATEGORY_HEIGHT : 0)}px)`,
+              transition: isSwitchingCategory ? 'none' : undefined,
+            }}
+          >
+            {currentItems.map((item, index) => {
+              const ItemIcon = item.icon;
+              const isSelected = selectedIndex === index;
+              const hasSubItems = !!item.subItems?.length;
+
+              return (
+                <div
+                  key={item.id}
+                  className={`item-row ${isSelected ? 'selected' : ''}`}
+                  style={isSelected && index > 0 ? { marginTop: `${CATEGORY_HEIGHT}px` } : undefined}
+                >
+                  <button
+                    className={`item-icon ${isSelected ? 'selected' : ''}`}
+                    onClick={() => {
+                      if (!isSelected) {
+                        setSelectedIndices(prev => {
+                          const updated = [...prev];
+                          updated[currentCategory] = index;
+                          return updated;
+                        });
+                      } else {
+                        handleActivate();
+                      }
+                    }}
+                  >
+                    <div className="item-icon-wrapper">
+                      <ItemIcon size={24} />
+                    </div>
+                    <span className="item-label">{item.label}</span>
+                  </button>
+
+                  {/* Arrow between item and sub-menu */}
+                  {isSelected && subMenuOpen && (
+                    <span className="sub-open-arrow">►</span>
+                  )}
+
+                  {/* Sub-menu panel — appears to the right of the item */}
+                  {isSelected && hasSubItems && subMenuOpen && (
+                    <div className="sub-menu-panel">
+                      {item.subItems.map((sub, si) => {
+                        const SubIcon = sub.icon;
+                        return (
+                          <button
+                            key={sub.id}
+                            className={`sub-item ${subMenuIndex === si ? 'selected' : ''}`}
+                            onClick={() => {
+                              setSubMenuIndex(si);
+                              if (subMenuIndex === si) {
+                                setActiveItem(sub);
+                                if (sub.action?.type === 'media') setShowMedia(sub);
+                                else setShowDetails(true);
+                              }
+                            }}
+                          >
+                            <div className="sub-item-icon">
+                              <SubIcon size={16} />
+                            </div>
+                            <span className="sub-item-label">{sub.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 
