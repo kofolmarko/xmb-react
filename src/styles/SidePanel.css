@@ -6,7 +6,7 @@
   align-items: center;
   justify-content: flex-end;
   z-index: 200;
-  animation: fadeIn 150ms ease;
+  animation: fadeIn 120ms ease;
 }
 
 @keyframes fadeIn {
@@ -20,7 +20,7 @@
   width: 360px;
   height: 100%;
   padding: 48px 32px;
-  animation: slideIn 250ms ease-out;
+  animation: slideIn 180ms ease-out;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -79,7 +79,7 @@
   font-size: 14px;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: all 150ms ease;
+  transition: all 100ms ease;
   font-family: inherit;
   position: relative;
 }
@@ -127,7 +127,7 @@
   font-size: 14px;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: all 120ms ease;
+  transition: all 80ms ease;
   text-align: left;
   font-family: inherit;
   position: relative;

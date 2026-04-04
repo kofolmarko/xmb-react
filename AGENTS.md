@@ -73,6 +73,9 @@ All navigation state lives in `XMBContext` via `useReducer`. The state shape:
 Child components have NO `keydown` listeners (except QuitDialog for its own internal navigation,
 which is redundant but harmless).
 
+**Key repeat prevention:** The handler checks `e.repeat` and ignores repeated keydown events when
+holding a key down. This prevents sounds from firing multiple times and improves overall snappiness.
+
 Key mappings:
 - `ArrowLeft/Right` — Navigate categories (or quit dialog options)
 - `ArrowUp/Down` — Navigate items (or side panel actions)
@@ -113,8 +116,11 @@ autoplay audio. The WaveBackground never stops — it's a single canvas running 
 ## Item Column Scrolling
 
 - **Switching categories:** instant snap (no animation)
-- **Navigating items within a category:** 250ms slide transition
+- **Navigating items within a category:** 100ms slide transition (perfectly matches category row speed)
 - Controlled by `isSwitchingCategory` flag in state
+- Optimized cubic-bezier easing: `cubic-bezier(0.33, 0.66, 0.66, 1)` for responsive feel
+- **Margin shifts are instant (not animated)** — prevents bounce from opposing transform/margin animations
+- Only transform and opacity animate; margin-bottom changes instantly for crisp movement
 
 ## CSS Architecture
 
@@ -153,3 +159,5 @@ npm run preview  # Preview production build
 5. **SidePanel has two modes** — `info` (icon, title, description) and `actions` (list of buttons).
    Don't create separate components for these.
 6. **QuitDialog uses context state** — `quitDialogIndex` is in the reducer, not local state.
+7. **Key repeat is blocked** — the keyboard handler checks `e.repeat` to prevent sounds/actions
+   from firing repeatedly when holding keys. Never remove this check.

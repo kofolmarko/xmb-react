@@ -35,6 +35,9 @@ function XMBShell({ playSound, menuVisible }) {
   const touchStartTimeRef = useRef(0);
 
   const handleKeyDown = useCallback((e) => {
+    // Ignore repeated keydown events when holding a key
+    if (e.repeat) return;
+
     if (state.showQuitDialog) {
       if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
         e.preventDefault();

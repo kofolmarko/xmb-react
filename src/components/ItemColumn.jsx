@@ -16,7 +16,7 @@ export function ItemColumn({ currentCategory, selectedIndices, subMenuOpen, subM
       left: 'var(--item-left)',
       '--selected-index': selectedIndex,
       transform: `translateX(${xOffset}) translateY(${yOffset})`,
-      transition: isSwitchingCategory ? 'none' : 'transform 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+      transition: isSwitchingCategory ? 'none' : 'transform 100ms cubic-bezier(0.33, 0.66, 0.66, 1)',
     };
   }, [selectedIndex, isSwitchingCategory, subMenuOpen]);
 
