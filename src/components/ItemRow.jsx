@@ -1,6 +1,6 @@
 import { SubMenuPanel } from './SubMenuPanel';
 
-export function ItemRow({ item, index, isSelected, isSubOpen, subMenuIndex, onSelect, onActivate, isGameCategory, isItemAboveSelected }) {
+export function ItemRow({ item, index, isSelected, isSubOpen, subMenuIndex, selectedIndex, onNavigateItem, onActivate, onBack, isGameCategory, isItemAboveSelected }) {
   const ItemIcon = item.icon;
   const hasSubItems = !!item.subItems?.length;
 
@@ -12,8 +12,15 @@ export function ItemRow({ item, index, isSelected, isSubOpen, subMenuIndex, onSe
       <button
         className={`item-icon ${isSelected ? 'selected' : ''}`}
         onClick={() => {
-          if (!isSelected) onSelect(index);
-          else onActivate();
+          if (!isSelected) {
+            const direction = index - selectedIndex;
+            onNavigateItem(direction);
+          } else if (isSubOpen && hasSubItems) {
+            // If submenu is open, clicking parent item closes it
+            onBack();
+          } else {
+            onActivate();
+          }
         }}
       >
         <div className="item-icon-wrapper">
@@ -33,6 +40,7 @@ export function ItemRow({ item, index, isSelected, isSubOpen, subMenuIndex, onSe
         <SubMenuPanel
           subItems={item.subItems}
           subMenuIndex={subMenuIndex}
+          onNavigateItem={onNavigateItem}
           onActivate={onActivate}
         />
       )}

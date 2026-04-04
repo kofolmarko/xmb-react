@@ -85,6 +85,39 @@ Key mappings:
 
 All keys call `e.preventDefault()` to block browser defaults.
 
+## Touch & Gesture Controls
+
+**ALL touch handling is centralized in `App.jsx`** via `onTouchStart` and `onTouchEnd` on the
+`.xmb-container` element. Touch events bubble up from child components (buttons) to allow both
+direct clicks and swipe gestures.
+
+**Swipe direction logic:**
+- Swipe **right** → Navigate to **previous** category (like flipping pages left)
+- Swipe **left** → Navigate to **next** category  
+- Swipe **down** → Navigate to **previous** item (scroll up)
+- Swipe **up** → Navigate to **next** item (scroll down)
+
+**Click/Tap interactions:**
+- **Click category icon** → Jump directly to that category
+- **Click item** → Select it (if not selected) or activate it (if already selected)
+- **Click submenu item** → Select it (if not selected) or activate it (if already selected)
+
+**Submenu gestures:**
+- When submenu is open, swipe **left** → Close submenu (go back)
+- Vertical swipes in submenus navigate between sub-items
+
+**Overlay interactions:**
+- In MediaPlayer/SidePanel: Tap outside (x > 100px) → Go back
+- In QuitDialog: Tap anywhere → Close dialog
+
+**Touch detection thresholds:**
+- `SWIPE_THRESHOLD = 50px` — Minimum distance to register as swipe
+- `TAP_THRESHOLD = 10px` — Maximum movement to register as tap/click
+- Tap duration must be < 300ms
+
+**Important:** Button `onClick` handlers work alongside touch gestures. The touch handler only
+processes swipes (distance > SWIPE_THRESHOLD), allowing taps/clicks to bubble to buttons naturally.
+
 ## Item Types (manifest.jsx)
 
 Every item has a `type` field that determines Enter behavior:
@@ -161,3 +194,5 @@ npm run preview  # Preview production build
 6. **QuitDialog uses context state** — `quitDialogIndex` is in the reducer, not local state.
 7. **Key repeat is blocked** — the keyboard handler checks `e.repeat` to prevent sounds/actions
    from firing repeatedly when holding keys. Never remove this check.
+8. **Touch events work with button clicks** — The centralized touch handler only processes swipes,
+   allowing button `onClick` events to work naturally. Don't prevent event propagation.

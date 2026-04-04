@@ -1,6 +1,6 @@
 import '../styles/SubMenu.css';
 
-export function SubMenuPanel({ subItems, subMenuIndex, onActivate }) {
+export function SubMenuPanel({ subItems, subMenuIndex, onNavigateItem, onActivate }) {
   return (
     <div className="sub-menu-panel">
       {subItems.map((sub, si) => {
@@ -15,7 +15,12 @@ export function SubMenuPanel({ subItems, subMenuIndex, onActivate }) {
             className={`sub-item ${subMenuIndex === si ? 'selected' : ''}`}
             style={itemStyle}
             onClick={() => {
-              if (subMenuIndex === si) onActivate();
+              if (subMenuIndex === si) {
+                onActivate();
+              } else {
+                const direction = si - subMenuIndex;
+                onNavigateItem(direction);
+              }
             }}
           >
             <div className="sub-item-icon">

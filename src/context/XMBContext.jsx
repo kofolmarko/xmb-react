@@ -58,6 +58,18 @@ function reducer(state, action) {
       };
     }
 
+    case 'NAVIGATE_TO_CATEGORY': {
+      if (action.index === state.currentCategory) return state;
+      if (action.index < 0 || action.index >= categories.length) return state;
+      return {
+        ...state,
+        currentCategory: action.index,
+        subMenuOpen: false,
+        contextMenuOpen: false,
+        isSwitchingCategory: true,
+      };
+    }
+
     case 'NAVIGATE_ITEM': {
       if (state.subMenuOpen) {
         const item = getCurrentItem(state);
@@ -221,6 +233,11 @@ export function XMBProvider({ children, playSound }) {
     dispatch({ type: 'NAVIGATE_CATEGORY', direction });
   }, [playSound]);
 
+  const navigateToCategory = useCallback((index) => {
+    playSound('cursor');
+    dispatch({ type: 'NAVIGATE_TO_CATEGORY', index });
+  }, [playSound]);
+
   const navigateItem = useCallback((direction) => {
     playSound('cursor');
     dispatch({ type: 'NAVIGATE_ITEM', direction });
@@ -232,9 +249,12 @@ export function XMBProvider({ children, playSound }) {
   }, [playSound]);
 
   const back = useCallback(() => {
-    playSound('cancel');
+    // Only play cancel sound when showing quit dialog from media
+    if (state.showMedia) {
+      playSound('cancel');
+    }
     dispatch({ type: 'BACK' });
-  }, [playSound]);
+  }, [playSound, state.showMedia]);
 
   const openSidePanel = useCallback((mode, item) => {
     playSound('confirm');
@@ -289,6 +309,7 @@ export function XMBProvider({ children, playSound }) {
   const value = useMemo(() => ({
     state,
     navigateCategory,
+    navigateToCategory,
     navigateItem,
     activate,
     back,
@@ -305,7 +326,7 @@ export function XMBProvider({ children, playSound }) {
     executeQuitDialog,
     getCurrentItem,
     getContextOptions,
-  }), [state, navigateCategory, navigateItem, activate, back, openSidePanel, closeSidePanel, openMedia, closeMedia, showQuitDialog, hideQuitDialog, quitMedia, navigateSidePanel, executeSidePanelAction, navigateQuitDialog, executeQuitDialog]);
+  }), [state, navigateCategory, navigateToCategory, navigateItem, activate, back, openSidePanel, closeSidePanel, openMedia, closeMedia, showQuitDialog, hideQuitDialog, quitMedia, navigateSidePanel, executeSidePanelAction, navigateQuitDialog, executeQuitDialog]);
 
   return <XMBContext.Provider value={value}>{children}</XMBContext.Provider>;
 }

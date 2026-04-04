@@ -75,7 +75,14 @@ function XMBShell({ playSound, menuVisible }) {
       return;
     }
     switch (e.key) {
-      case 'ArrowLeft':  e.preventDefault(); navigateCategory(-1); break;
+      case 'ArrowLeft':
+        e.preventDefault();
+        if (state.subMenuOpen) {
+          back(); // Close submenu
+        } else {
+          navigateCategory(-1);
+        }
+        break;
       case 'ArrowRight': e.preventDefault(); navigateCategory(1);  break;
       case 'ArrowUp':    e.preventDefault(); navigateItem(-1);     break;
       case 'ArrowDown':  e.preventDefault(); navigateItem(1);      break;
@@ -105,25 +112,38 @@ function XMBShell({ playSound, menuVisible }) {
     const touch = e.changedTouches[0];
     const dx = touch.clientX - touchStartRef.current.x;
     const dy = touch.clientY - touchStartRef.current.y;
-    const swipeDistance = Math.abs(dx) > Math.abs(dy) ? dx : dy;
     const touchDuration = Date.now() - touchStartTimeRef.current;
-    const isTap = Math.abs(dx) < TAP_THRESHOLD && Math.abs(dy) < TAP_THRESHOLD && touchDuration < 300;
+    const distanceMoved = Math.sqrt(dx * dx + dy * dy);
+    const isTap = distanceMoved < TAP_THRESHOLD && touchDuration < 300;
 
+    // Handle taps/clicks in overlays
     if (state.showQuitDialog) {
       if (isTap) hideQuitDialog();
     } else if (state.showMedia || state.showSidePanel) {
       if (isTap && touch.clientX > 100) back();
-    } else if (isTap) {
-      activate();
-    } else if (Math.abs(swipeDistance) > SWIPE_THRESHOLD) {
+    } else if (state.subMenuOpen) {
+      // When submenu is open, swipe left or tap to close
+      if (!isTap && distanceMoved > SWIPE_THRESHOLD) {
+        if (Math.abs(dx) > Math.abs(dy) && dx < 0) {
+          // Swipe left = close submenu
+          back();
+        } else if (Math.abs(dy) > Math.abs(dx)) {
+          // Vertical swipe in submenu: dy > 0 = swipe down = previous item
+          navigateItem(dy > 0 ? -1 : 1);
+        }
+      }
+    } else if (!isTap && distanceMoved > SWIPE_THRESHOLD) {
+      // Only handle swipe gestures here; let ItemRow onClick handle taps
       if (Math.abs(dx) > Math.abs(dy)) {
+        // Horizontal swipe: dx > 0 = swipe right = go to previous category
         navigateCategory(dx > 0 ? -1 : 1);
       } else {
+        // Vertical swipe: dy > 0 = swipe down = go to previous item
         navigateItem(dy > 0 ? -1 : 1);
       }
     }
     touchStartRef.current = null;
-  }, [state, navigateCategory, navigateItem, activate, back, hideQuitDialog]);
+  }, [state, navigateCategory, navigateItem, back, hideQuitDialog]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
@@ -137,7 +157,7 @@ function XMBShell({ playSound, menuVisible }) {
     <div className="app">
       <WaveBackground />
       <SplashBackground splashArt={splashArt} />
-      <StatusBar style={{ opacity: menuVisible ? 1 : 0, transition: 'opacity 800ms ease 400ms' }} />
+      {menuVisible && <StatusBar />}
 
       <div
         className="xmb-container"
@@ -152,11 +172,9 @@ function XMBShell({ playSound, menuVisible }) {
           subMenuOpen={state.subMenuOpen}
           subMenuIndex={state.subMenuIndex}
           isSwitchingCategory={state.isSwitchingCategory}
-          onSelect={(index) => {
-            const updated = [...state.selectedIndices];
-            updated[state.currentCategory] = index;
-          }}
+          onNavigateItem={navigateItem}
           onActivate={activate}
+          onBack={back}
         />
       </div>
 

@@ -3,7 +3,7 @@ import { categories } from '../manifest';
 import { ItemRow } from './ItemRow';
 import '../styles/ItemColumn.css';
 
-export function ItemColumn({ currentCategory, selectedIndices, subMenuOpen, subMenuIndex, isSwitchingCategory, onSelect, onActivate }) {
+export function ItemColumn({ currentCategory, selectedIndices, subMenuOpen, subMenuIndex, isSwitchingCategory, onNavigateItem, onActivate, onBack }) {
   const items = useMemo(() => categories[currentCategory]?.items || [], [currentCategory]);
   const cat = useMemo(() => categories[currentCategory], [currentCategory]);
   const selectedIndex = selectedIndices[currentCategory];
@@ -34,8 +34,10 @@ export function ItemColumn({ currentCategory, selectedIndices, subMenuOpen, subM
             isSelected={selectedIndex === index}
             isSubOpen={subMenuOpen}
             subMenuIndex={subMenuIndex}
-            onSelect={onSelect}
+            selectedIndex={selectedIndex}
+            onNavigateItem={onNavigateItem}
             onActivate={onActivate}
+            onBack={onBack}
             isGameCategory={isGameCategory}
             isItemAboveSelected={index === selectedIndex - 1}
           />

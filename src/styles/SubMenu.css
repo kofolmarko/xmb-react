@@ -72,6 +72,10 @@
   font-size: var(--item-font-selected);
 }
 
+.sub-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
 .sub-item:active,
 .sub-item.pressed {
   transform: scale(0.94);

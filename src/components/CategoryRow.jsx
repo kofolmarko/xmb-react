@@ -1,10 +1,13 @@
 import { useMemo } from 'react';
+import { useXMB } from '../context/XMBContext';
 import { categories } from '../manifest';
 import '../styles/CategoryRow.css';
 
 const CATEGORY_WIDTH = 110;
 
 export function CategoryRow({ currentCategory, subMenuOpen }) {
+  const { navigateToCategory } = useXMB();
+  
   const style = useMemo(() => {
     const categoryOffset = -currentCategory * CATEGORY_WIDTH;
     const shiftOffset = subMenuOpen ? -100 : 0;
@@ -26,6 +29,8 @@ export function CategoryRow({ currentCategory, subMenuOpen }) {
             <div
               key={cat.id}
               className={`category-col ${currentCategory === index ? 'active' : ''}`}
+              onClick={() => navigateToCategory(index)}
+              style={{ cursor: 'pointer' }}
             >
               <div className="category-icon">
                 <CatIcon size={40} />
