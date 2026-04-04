@@ -12,8 +12,10 @@ export function WaveBackground() {
     const ctx = canvas.getContext('2d');
 
     function resize() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      if (canvas.width !== window.innerWidth || canvas.height !== window.innerHeight) {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
     }
 
     function waveY(x, w, phase, amplitude, freq) {
@@ -39,7 +41,6 @@ export function WaveBackground() {
     function frame() {
       frameRef.current = requestAnimationFrame(frame);
       tRef.current += 0.002;
-      resize();
       const w = canvas.width, h = canvas.height;
 
       const bgGrad = ctx.createLinearGradient(0, 0, 0, h);
@@ -58,8 +59,12 @@ export function WaveBackground() {
     resize();
     frameRef.current = requestAnimationFrame(frame);
 
+    const onResize = () => resize();
+    window.addEventListener('resize', onResize);
+
     return () => {
       if (frameRef.current) cancelAnimationFrame(frameRef.current);
+      window.removeEventListener('resize', onResize);
     };
   }, []);
 

@@ -1,13 +1,13 @@
 import { SubMenuPanel } from './SubMenuPanel';
 
-export function ItemRow({ item, index, isSelected, isSubOpen, subMenuIndex, onSelect, onActivate }) {
+export function ItemRow({ item, index, isSelected, isSubOpen, subMenuIndex, onSelect, onActivate, isGameCategory, isItemAboveSelected }) {
   const ItemIcon = item.icon;
   const hasSubItems = !!item.subItems?.length;
 
   return (
     <div
       className={`item-row ${isSelected ? 'selected' : ''}`}
-      style={isSelected && index > 0 ? { marginTop: `${72}px` } : undefined}
+      style={isItemAboveSelected ? { marginBottom: 'calc(var(--category-height) + 12px)' } : undefined}
     >
       <button
         className={`item-icon ${isSelected ? 'selected' : ''}`}
@@ -20,6 +20,9 @@ export function ItemRow({ item, index, isSelected, isSubOpen, subMenuIndex, onSe
           <ItemIcon size={24} />
         </div>
         <span className="item-label">{item.label}</span>
+        {isGameCategory && item.umd && isSelected && (
+          <span className="umd-indicator">UMD</span>
+        )}
       </button>
 
       {isSelected && isSubOpen && (

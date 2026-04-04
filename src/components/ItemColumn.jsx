@@ -3,16 +3,16 @@ import { categories } from '../manifest';
 import { ItemRow } from './ItemRow';
 import '../styles/ItemColumn.css';
 
-const ITEM_HEIGHT = 52;
-const CATEGORY_HEIGHT = 72;
-
 export function ItemColumn({ currentCategory, selectedIndices, subMenuOpen, subMenuIndex, isSwitchingCategory, onSelect, onActivate }) {
   const items = useMemo(() => categories[currentCategory]?.items || [], [currentCategory]);
+  const cat = useMemo(() => categories[currentCategory], [currentCategory]);
   const selectedIndex = selectedIndices[currentCategory];
+  const isGameCategory = cat?.id === 'game';
 
   const style = useMemo(() => ({
-    left: '20%',
-    transform: `translateY(-${selectedIndex * ITEM_HEIGHT + (selectedIndex > 0 ? CATEGORY_HEIGHT : 0)}px)`,
+    left: 'var(--item-left)',
+    '--selected-index': selectedIndex,
+    transform: `translateY(calc(var(--selected-index) * -1 * (var(--item-height) + var(--item-gap)) - ${selectedIndex > 0 ? 'calc(var(--category-height) + 12px)' : '0px'}))`,
     transition: isSwitchingCategory ? 'none' : 'transform 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
   }), [selectedIndex, isSwitchingCategory]);
 
@@ -32,6 +32,8 @@ export function ItemColumn({ currentCategory, selectedIndices, subMenuOpen, subM
             subMenuIndex={subMenuIndex}
             onSelect={onSelect}
             onActivate={onActivate}
+            isGameCategory={isGameCategory}
+            isItemAboveSelected={index === selectedIndex - 1}
           />
         ))}
       </div>

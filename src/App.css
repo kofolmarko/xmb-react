@@ -1,11 +1,19 @@
 :root {
   --icon-active: #ffffff;
-  --icon-dim: rgba(255, 255, 255, 0.35);
+  --icon-dim: #666688;
   --text-primary: #ffffff;
   --text-secondary: rgba(255, 255, 255, 0.55);
   --icon-glow: rgba(255, 255, 255, 0.4);
-  --category-y: 40%;
-  --category-height: 72px;
+  --category-y: 35%;
+  --category-height: 60px;
+  --item-height: 60px;
+  --item-gap: 16px;
+  --item-icon-size: 40px;
+  --item-font-size: 15px;
+  --item-font-selected: 16px;
+  --category-icon-size: 40px;
+  --category-col-width: 110px;
+  --item-left: 20%;
 }
 
 * {

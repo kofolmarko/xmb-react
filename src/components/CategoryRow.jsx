@@ -2,11 +2,11 @@ import { useMemo } from 'react';
 import { categories } from '../manifest';
 import '../styles/CategoryRow.css';
 
-const CATEGORY_WIDTH = 100;
+const CATEGORY_WIDTH = 110;
 
 export function CategoryRow({ currentCategory }) {
   const style = useMemo(() => ({
-    left: '20%',
+    left: 'var(--item-left)',
     transform: `translateX(-${currentCategory * CATEGORY_WIDTH}px)`
   }), [currentCategory]);
 
@@ -21,7 +21,7 @@ export function CategoryRow({ currentCategory }) {
               className={`category-col ${currentCategory === index ? 'active' : ''}`}
             >
               <div className="category-icon">
-                <CatIcon size={32} />
+                <CatIcon size={40} />
               </div>
               <span className="category-label">{cat.label}</span>
             </div>

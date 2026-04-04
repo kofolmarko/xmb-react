@@ -16,7 +16,7 @@
 }
 
 .category-col {
-  width: 100px;
+  width: var(--category-col-width);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -30,6 +30,11 @@
   justify-content: center;
   color: var(--icon-dim);
   transition: all 200ms ease-out;
+}
+
+.category-icon svg {
+  width: var(--category-icon-size);
+  height: var(--category-icon-size);
 }
 
 .category-col.active .category-icon {
