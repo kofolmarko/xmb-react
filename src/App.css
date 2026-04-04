@@ -16,23 +16,7 @@
   --item-left: 20%;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
 
-html, body, #root {
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-}
-
-body {
-  font-family: "Segoe UI", "SF Pro Display", system-ui, sans-serif;
-  background: #0d0018;
-  color: var(--text-primary);
-}
 
 .app {
   display: flex;

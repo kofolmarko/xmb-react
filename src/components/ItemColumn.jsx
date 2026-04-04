@@ -9,12 +9,16 @@ export function ItemColumn({ currentCategory, selectedIndices, subMenuOpen, subM
   const selectedIndex = selectedIndices[currentCategory];
   const isGameCategory = cat?.id === 'game';
 
-  const style = useMemo(() => ({
-    left: 'var(--item-left)',
-    '--selected-index': selectedIndex,
-    transform: `translateY(calc(var(--selected-index) * -1 * (var(--item-height) + var(--item-gap)) - ${selectedIndex > 0 ? 'calc(var(--category-height) + 12px)' : '0px'}))`,
-    transition: isSwitchingCategory ? 'none' : 'transform 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-  }), [selectedIndex, isSwitchingCategory]);
+  const style = useMemo(() => {
+    const yOffset = `calc(var(--selected-index) * -1 * (var(--item-height) + var(--item-gap)) - ${selectedIndex > 0 ? 'calc(var(--category-height) + 12px)' : '0px'})`;
+    const xOffset = subMenuOpen ? '-100px' : '0px';
+    return {
+      left: 'var(--item-left)',
+      '--selected-index': selectedIndex,
+      transform: `translateX(${xOffset}) translateY(${yOffset})`,
+      transition: isSwitchingCategory ? 'none' : 'transform 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+    };
+  }, [selectedIndex, isSwitchingCategory, subMenuOpen]);
 
   return (
     <div className="items-row">

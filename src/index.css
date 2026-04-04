@@ -4,8 +4,20 @@
   box-sizing: border-box;
 }
 
+button, input, select, textarea {
+  font-family: inherit;
+}
+
 html, body, #root {
   height: 100%;
   width: 100%;
   overflow: hidden;
+}
+
+body {
+  font-family: 'Michroma', sans-serif;
+  background: #0d0018;
+  color: #ffffff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }

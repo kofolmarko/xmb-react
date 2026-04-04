@@ -142,7 +142,7 @@ function XMBShell({ playSound, menuVisible }) {
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
-        <CategoryRow currentCategory={state.currentCategory} />
+        <CategoryRow currentCategory={state.currentCategory} subMenuOpen={state.subMenuOpen} />
         <ItemColumn
           currentCategory={state.currentCategory}
           selectedIndices={state.selectedIndices}

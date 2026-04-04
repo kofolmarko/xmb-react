@@ -4,15 +4,22 @@ import '../styles/CategoryRow.css';
 
 const CATEGORY_WIDTH = 110;
 
-export function CategoryRow({ currentCategory }) {
-  const style = useMemo(() => ({
-    left: 'var(--item-left)',
-    transform: `translateX(-${currentCategory * CATEGORY_WIDTH}px)`
-  }), [currentCategory]);
+export function CategoryRow({ currentCategory, subMenuOpen }) {
+  const style = useMemo(() => {
+    const categoryOffset = -currentCategory * CATEGORY_WIDTH;
+    const shiftOffset = subMenuOpen ? -100 : 0;
+    const totalOffset = categoryOffset + shiftOffset;
+    return {
+      left: 'var(--item-left)',
+      transform: `translateX(${totalOffset}px)`,
+      opacity: subMenuOpen ? 0.2 : 1,
+      transition: 'transform 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+    };
+  }, [currentCategory, subMenuOpen]);
 
   return (
     <div className="category-row">
-      <div className="category-inner" style={style}>
+      <div className={`category-inner ${subMenuOpen ? 'sub-open' : ''}`} style={style}>
         {categories.map((cat, index) => {
           const CatIcon = cat.icon;
           return (

@@ -12,7 +12,7 @@
   position: absolute;
   display: flex;
   align-items: center;
-  transition: transform 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: transform 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 200ms ease-out;
 }
 
 .category-col {
@@ -22,6 +22,12 @@
   align-items: center;
   justify-content: center;
   gap: 4px;
+  transition: opacity 200ms ease-out;
+}
+
+.category-inner.sub-open .category-col:not(.active) {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .category-icon {
@@ -44,7 +50,7 @@
 }
 
 .category-label {
-  font-size: 11px;
+  font-size: var(--item-font-size);
   color: var(--icon-active);
   letter-spacing: 0.03em;
   white-space: nowrap;
@@ -54,6 +60,12 @@
 
 .category-col.active .category-label {
   opacity: 1;
+  transition: opacity 250ms ease;
+}
+
+.category-inner.sub-open .category-col.active .category-label {
+  opacity: 0;
+  transition: opacity 250ms ease;
 }
 
 .category-col:active,
