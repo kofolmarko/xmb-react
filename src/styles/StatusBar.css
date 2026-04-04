@@ -3,25 +3,25 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 28px;
-  padding: 0 14px;
+  height: 32px;
+  padding: 0 16px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 12px;
-  font-size: 12px;
+  gap: 14px;
+  font-size: 13px;
   color: rgba(255, 255, 255, 0.85);
   z-index: 100;
 }
 
 .status-date {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 400;
   letter-spacing: 0.02em;
 }
 
 .status-battery {
-  height: 10px;
+  height: 12px;
   width: auto;
   display: block;
   margin-top: 2px;
