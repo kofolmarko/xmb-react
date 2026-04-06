@@ -1,4 +1,4 @@
-<img src="public/banner.svg" alt="react-xmb" width="100%"/>
+<img src="public/banner.png" alt="react-xmb" width="100%"/>
 
 # react-xmb
 
