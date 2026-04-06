@@ -13,6 +13,11 @@ const initialState = {
   contextMenuIndex: 0,
   activeItem: null,
   showMedia: null,
+  showLoading: false,
+  loadingItem: null,
+  showDocumentViewer: false,
+  showGalleryViewer: false,
+  showDownloadPanel: false,
   showSidePanel: false,
   sidePanelMode: null,
   sidePanelActionIndex: 0,
@@ -33,13 +38,21 @@ function getContextOptions(item) {
     options.push({ id: 'play', label: 'Play' });
     options.push({ id: 'new-tab', label: 'Open in New Tab' });
   }
-  options.push({ id: 'info', label: 'View Info' });
   return options;
 }
 
 function activateItem(state, item) {
   if (item.type === 'application') {
-    return { ...state, showMedia: item, showSidePanel: false, sidePanelMode: null };
+    return { ...state, showLoading: true, loadingItem: item, showSidePanel: false, sidePanelMode: null };
+  }
+  if (item.type === 'document') {
+    return { ...state, showDocumentViewer: true, activeItem: item, showSidePanel: false, sidePanelMode: null };
+  }
+  if (item.type === 'gallery') {
+    return { ...state, showGalleryViewer: true, activeItem: item, showSidePanel: false, sidePanelMode: null };
+  }
+  if (item.type === 'download') {
+    return { ...state, showDownloadPanel: true, activeItem: item, showSidePanel: false, sidePanelMode: null };
   }
   return { ...state, showSidePanel: true, sidePanelMode: 'info', activeItem: item };
 }
@@ -111,6 +124,9 @@ function reducer(state, action) {
     case 'BACK': {
       if (state.showQuitDialog) return state;
       if (state.showMedia) return { ...state, showQuitDialog: true };
+      if (state.showDocumentViewer) return { ...state, showDocumentViewer: false, activeItem: null };
+      if (state.showGalleryViewer) return { ...state, showGalleryViewer: false, activeItem: null };
+      if (state.showDownloadPanel) return { ...state, showDownloadPanel: false, activeItem: null };
       if (state.showSidePanel) return { ...state, showSidePanel: false, sidePanelMode: null, activeItem: null };
       if (state.contextMenuOpen) return { ...state, contextMenuOpen: false };
       if (state.subMenuOpen) return { ...state, subMenuOpen: false };
@@ -146,10 +162,9 @@ function reducer(state, action) {
         const selected = options[state.sidePanelActionIndex];
         if (!selected) return state;
         if (selected.id === 'play') {
-          return { ...state, showSidePanel: false, sidePanelMode: null, showMedia: item, activeItem: null };
+          return { ...state, showSidePanel: false, sidePanelMode: null, showLoading: true, loadingItem: item, activeItem: null };
         }
         if (selected.id === 'new-tab') {
-          if (item?.action?.src) window.open(item.action.src, '_blank');
           return { ...state, showSidePanel: false, sidePanelMode: null, activeItem: null };
         }
         if (selected.id === 'info') {
@@ -159,10 +174,9 @@ function reducer(state, action) {
         const isMedia = item?.action?.type === 'media';
         const actionIdx = state.sidePanelActionIndex;
         if (actionIdx === 0 && isMedia) {
-          return { ...state, showSidePanel: false, sidePanelMode: null, showMedia: item, activeItem: null };
+          return { ...state, showSidePanel: false, sidePanelMode: null, showLoading: true, loadingItem: item, activeItem: null };
         }
         if (actionIdx === 1 && isMedia) {
-          if (item?.action?.src) window.open(item.action.src, '_blank');
           return { ...state, showSidePanel: false, sidePanelMode: null, activeItem: null };
         }
       }
@@ -217,6 +231,15 @@ function reducer(state, action) {
         showSidePanel: false,
         sidePanelMode: null,
         activeItem: null,
+      };
+    }
+
+    case 'LOADING_COMPLETE': {
+      return {
+        ...state,
+        showLoading: false,
+        showMedia: state.loadingItem,
+        loadingItem: null,
       };
     }
 
@@ -306,6 +329,10 @@ export function XMBProvider({ children, playSound }) {
     dispatch({ type: 'EXECUTE_QUIT_DIALOG' });
   }, [playSound]);
 
+  const loadingComplete = useCallback(() => {
+    dispatch({ type: 'LOADING_COMPLETE' });
+  }, []);
+
   const value = useMemo(() => ({
     state,
     navigateCategory,
@@ -324,9 +351,10 @@ export function XMBProvider({ children, playSound }) {
     executeSidePanelAction,
     navigateQuitDialog,
     executeQuitDialog,
+    loadingComplete,
     getCurrentItem,
     getContextOptions,
-  }), [state, navigateCategory, navigateToCategory, navigateItem, activate, back, openSidePanel, closeSidePanel, openMedia, closeMedia, showQuitDialog, hideQuitDialog, quitMedia, navigateSidePanel, executeSidePanelAction, navigateQuitDialog, executeQuitDialog]);
+  }), [state, navigateCategory, navigateToCategory, navigateItem, activate, back, openSidePanel, closeSidePanel, openMedia, closeMedia, showQuitDialog, hideQuitDialog, quitMedia, navigateSidePanel, executeSidePanelAction, navigateQuitDialog, executeQuitDialog, loadingComplete]);
 
   return <XMBContext.Provider value={value}>{children}</XMBContext.Provider>;
 }

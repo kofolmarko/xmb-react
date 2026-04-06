@@ -16,7 +16,7 @@ function reducer(state, action) {
   }
 }
 
-export function SplashBackground({ splashArt }) {
+export function SplashBackground({ splashArt, hidden }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const timerRef = useRef(null);
   const artRef = useRef(splashArt);
@@ -42,8 +42,11 @@ export function SplashBackground({ splashArt }) {
 
   return (
     <div
-      className={`splash-bg ${state.visible ? 'splash-bg-in' : ''}`}
-      style={state.url ? { backgroundImage: `url(${state.url})` } : undefined}
+      className={`splash-bg ${state.visible && !hidden ? 'splash-bg-in' : ''}`}
+      style={{
+        ...(state.url ? { backgroundImage: `url(${state.url})` } : undefined),
+        ...(hidden ? { opacity: 0, transition: 'none' } : undefined),
+      }}
     />
   );
 }

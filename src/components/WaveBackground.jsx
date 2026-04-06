@@ -1,10 +1,16 @@
 import { useRef, useEffect } from 'react';
 import '../styles/WaveBackground.css';
 
-export function WaveBackground() {
+export function WaveBackground({ surge }) {
   const canvasRef = useRef(null);
   const tRef = useRef(0);
   const frameRef = useRef(null);
+  const speedRef = useRef(1);
+  const surgeRef = useRef(surge);
+
+  useEffect(() => {
+    surgeRef.current = surge;
+  }, [surge]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -40,7 +46,12 @@ export function WaveBackground() {
 
     function frame() {
       frameRef.current = requestAnimationFrame(frame);
-      tRef.current += 0.002;
+
+      const target = surgeRef.current ? 40 : 1;
+      const lerp = surgeRef.current ? 0.18 : 0.03;
+      speedRef.current += (target - speedRef.current) * lerp;
+      tRef.current += 0.002 * speedRef.current;
+
       const w = canvas.width, h = canvas.height;
 
       const bgGrad = ctx.createLinearGradient(0, 0, 0, h);

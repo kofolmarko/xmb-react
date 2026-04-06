@@ -1,7 +1,9 @@
 .quit-dialog-overlay {
   position: fixed;
   inset: 0;
-  background: #1a1a2e;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -19,53 +21,46 @@
 }
 
 .quit-dialog {
+  width: 100%;
   text-align: center;
-  padding: 40px;
-}
-
-.quit-dialog-title {
-  font-size: 24px;
-  font-weight: 600;
-  margin-bottom: 40px;
-  color: #ffffff;
-  letter-spacing: 2px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  padding: 32px 0;
 }
 
 .quit-dialog-message {
-  font-size: 18px;
-  color: #ffffff;
-  margin-bottom: 48px;
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 400;
+  letter-spacing: 0.3px;
 }
 
 .quit-dialog-options {
   display: flex;
-  justify-content: center;
   gap: 48px;
 }
 
 .quit-option {
-  background: transparent;
-  border: none;
-  padding: 12px 24px;
-  font-size: 16px;
-  color: #8888aa;
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.35);
   cursor: pointer;
-  transition: all 120ms ease;
-  position: relative;
+  transition: color 100ms ease, text-shadow 100ms ease;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  padding: 2px 16px;
+  border: none;
+  background: none;
 }
 
 .quit-option.selected {
-  color: #ffffff;
+  color: rgba(255, 255, 255, 1);
+  text-shadow: 0 0 14px rgba(255, 255, 255, 0.6);
 }
 
-.quit-option.selected::before {
-  content: '▶';
-  position: absolute;
-  left: -4px;
-  color: #ffcc00;
-  font-size: 14px;
-}
 
-.quit-option:active {
-  transform: scale(0.95);
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

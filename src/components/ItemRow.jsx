@@ -3,6 +3,7 @@ import { SubMenuPanel } from './SubMenuPanel';
 export function ItemRow({ item, index, isSelected, isSubOpen, subMenuIndex, selectedIndex, onNavigateItem, onActivate, onBack, isGameCategory, isItemAboveSelected }) {
   const ItemIcon = item.icon;
   const hasSubItems = !!item.subItems?.length;
+  const hasThumbnail = !!item.thumbnail;
 
   return (
     <div
@@ -10,7 +11,7 @@ export function ItemRow({ item, index, isSelected, isSubOpen, subMenuIndex, sele
       style={isItemAboveSelected ? { marginBottom: 'calc(var(--category-height) + 12px)' } : undefined}
     >
       <button
-        className={`item-icon ${isSelected ? 'selected' : ''}`}
+        className={`item-icon ${isSelected ? 'selected' : ''} ${hasThumbnail ? 'has-thumbnail' : ''}`}
         onClick={() => {
           if (!isSelected) {
             const direction = index - selectedIndex;
@@ -23,13 +24,17 @@ export function ItemRow({ item, index, isSelected, isSubOpen, subMenuIndex, sele
           }
         }}
       >
-        <div className="item-icon-wrapper">
-          <ItemIcon size={24} />
-        </div>
-        <span className="item-label">{item.label}</span>
-        {isGameCategory && item.umd && isSelected && (
-          <span className="umd-indicator">UMD</span>
+        {hasThumbnail ? (
+          <div className="item-thumbnail-wrapper">
+            <img src={item.thumbnail} alt={item.label} className="item-thumbnail" />
+          </div>
+        ) : (
+          <div className="item-icon-wrapper">
+            <ItemIcon size={24} />
+          </div>
         )}
+        <span className="item-label">{item.label}</span>
+
       </button>
 
       {isSelected && isSubOpen && (

@@ -2,7 +2,7 @@ import { useRef, useEffect, useCallback, useState } from 'react';
 import { boot } from '../manifest';
 import '../styles/BootScreen.css';
 
-export function BootScreen({ onDone, playSound }) {
+export function BootScreen({ onDone, onExiting, playSound }) {
   const doneRef = useRef(false);
   const opacityRef = useRef(0);
   const phaseRef = useRef('fadeIn');
@@ -18,7 +18,8 @@ export function BootScreen({ onDone, playSound }) {
     transitionRef.current = true;
     transitionStartRef.current = performance.now();
     playSound('opening');
-  }, [playSound]);
+    onExiting?.();
+  }, [playSound, onExiting]);
 
   useEffect(() => {
     let running = true;

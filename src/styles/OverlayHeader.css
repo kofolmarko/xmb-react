@@ -1,0 +1,28 @@
+/* Shared bottom-right hint bar used by all overlays */
+.overlay-hint {
+  position: absolute;
+  bottom: 20px;
+  right: 24px;
+  display: flex;
+  gap: 24px;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.5px;
+  pointer-events: none;
+}
+
+.overlay-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 32px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 0.03em;
+  z-index: 100;
+  pointer-events: none;
+}

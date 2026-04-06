@@ -7,7 +7,7 @@ const CATEGORY_WIDTH = 110;
 
 export function CategoryRow({ currentCategory, subMenuOpen }) {
   const { navigateToCategory } = useXMB();
-  
+
   const style = useMemo(() => {
     const categoryOffset = -currentCategory * CATEGORY_WIDTH;
     const shiftOffset = subMenuOpen ? -100 : 0;

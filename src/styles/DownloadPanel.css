@@ -1,0 +1,113 @@
+.download-panel-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 200;
+  animation: fadeIn 150ms ease;
+}
+
+.download-panel-overlay .status-bar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: auto;
+}
+
+.download-panel {
+  max-width: 500px;
+  width: 90%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  align-items: center;
+  padding: 32px 0;
+}
+
+.download-title {
+  font-size: 20px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.95);
+  letter-spacing: 0.3px;
+  word-break: break-all;
+  margin-bottom: 8px;
+}
+
+.download-size {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.5px;
+  margin-bottom: 28px;
+}
+
+.download-body {
+  width: 100%;
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.download-message {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0;
+}
+
+.download-progress-bar {
+  width: 100%;
+  max-width: 300px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.15);
+  overflow: hidden;
+}
+
+.download-progress-fill {
+  height: 100%;
+  background: rgba(255, 255, 255, 0.8);
+  transition: width 100ms linear;
+}
+
+.download-progress-text {
+  font-size: 18px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: 0.5px;
+}
+
+.download-actions {
+  display: flex;
+  gap: 40px;
+}
+
+.download-action {
+  font-size: 17px;
+  color: rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  transition: color 100ms ease, text-shadow 100ms ease;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  padding: 2px 16px;
+  border: none;
+  background: none;
+}
+
+.download-action.selected {
+  color: rgba(255, 255, 255, 1);
+  text-shadow: 0 0 14px rgba(255, 255, 255, 0.6);
+}
+
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

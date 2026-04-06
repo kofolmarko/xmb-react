@@ -1,160 +1,146 @@
 .side-panel-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: flex-end;
   z-index: 200;
-  animation: fadeIn 120ms ease;
+  animation: fadeIn 150ms ease;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.side-panel {
-  background: rgba(40, 0, 100, 0.92);
-  backdrop-filter: blur(12px);
-  width: 360px;
-  height: 100%;
-  padding: 48px 32px;
-  animation: slideIn 180ms ease-out;
+/* The actual sliding panel */
+.side-panel-inner {
+  width: 340px;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
+  padding: 48px 40px 40px;
+  gap: 0;
+  animation: slideIn 180ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.side-panel-title {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  letter-spacing: 0.03em;
+  margin-bottom: 28px;
 }
 
 @keyframes slideIn {
   from { transform: translateX(100%); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
+  to   { transform: translateX(0);   opacity: 1; }
 }
 
-.side-panel-icon {
+
+/* ── Actions mode (context menu) ───────────────────────────────── */
+
+.side-panel-actions-list {
   display: flex;
-  justify-content: center;
-  color: white;
-  margin-bottom: 24px;
-  filter: drop-shadow(0 0 16px var(--icon-glow));
+  flex-direction: column;
+  padding: 20px 0;
+  gap: 0;
 }
 
-.side-panel-title {
-  font-size: 26px;
-  font-weight: 500;
-  text-align: center;
-  margin-bottom: 16px;
+.side-panel-action-item {
+  padding: 10px 0;
+  font-size: 16px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.35);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  letter-spacing: 0.3px;
+  transition: color 80ms ease, text-shadow 80ms ease;
+}
+
+.side-panel-action-item.selected {
+  color: rgba(255, 255, 255, 1);
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
+}
+
+/* ── Info mode ─────────────────────────────────────────────────── */
+
+.side-panel-info-body {
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 55vh;
+  overflow-y: auto;
+}
+
+.side-panel-info-body::-webkit-scrollbar {
+  width: 3px;
+}
+
+.side-panel-info-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .side-panel-description {
   font-size: 14px;
-  color: var(--text-secondary);
-  text-align: center;
-  margin-bottom: 8px;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.65;
+  white-space: pre-wrap;
 }
 
 .side-panel-date {
   font-size: 12px;
-  color: var(--text-secondary);
-  text-align: center;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.5px;
 }
 
-.side-panel-options {
+/* Media action buttons inside info mode */
+.side-panel-media-actions {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-top: 24px;
+  margin-top: 8px;
+  gap: 0;
 }
 
-.side-panel-option-btn {
+.side-panel-media-btn {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 6px;
-  padding: 12px 24px;
-  font-size: 14px;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: all 100ms ease;
-  font-family: inherit;
-  position: relative;
-}
-
-.side-panel-option-btn .option-cursor {
-  position: absolute;
-  left: 6px;
-  font-size: 12px;
-  color: #ffcc00;
-  opacity: 0;
-  transition: opacity 100ms ease;
-}
-
-.side-panel-option-btn.selected .option-cursor {
-  opacity: 1;
-}
-
-.side-panel-option-btn:hover,
-.side-panel-option-btn:active {
-  background: rgba(255, 255, 255, 0.15);
-  color: var(--text-primary);
-}
-
-.side-panel-option-btn.selected {
-  background: rgba(255, 255, 255, 0.15);
-  color: var(--text-primary);
-  border-color: rgba(255, 255, 255, 0.3);
-}
-
-.side-panel-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  width: 100%;
-  margin-top: 24px;
-}
-
-.side-panel-action-btn {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  padding: 10px 0;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.35);
   background: none;
   border: none;
-  padding: 14px 24px;
-  font-size: 14px;
-  color: var(--text-secondary);
   cursor: pointer;
-  transition: all 80ms ease;
-  text-align: left;
   font-family: inherit;
-  position: relative;
+  text-align: left;
+  letter-spacing: 0.3px;
+  transition: color 80ms ease, text-shadow 80ms ease;
 }
 
-.side-panel-action-btn .action-cursor {
-  position: absolute;
-  left: 4px;
-  font-size: 12px;
-  color: #ffcc00;
-  opacity: 0;
-  transition: opacity 100ms ease;
+.side-panel-media-btn.selected {
+  color: rgba(255, 255, 255, 1);
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
 }
 
-.side-panel-action-btn.selected .action-cursor {
-  opacity: 1;
-}
-
-.side-panel-action-btn:hover,
-.side-panel-action-btn:active {
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--text-primary);
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 @media (max-width: 768px) {
-  .side-panel {
+  .side-panel-inner {
     width: 100%;
-    padding: 32px 24px;
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    justify-content: flex-start;
+    padding-top: 60px;
   }
 }

@@ -1,16 +1,76 @@
-# React + Vite
+# react-xmb
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A PSP-style Cross Media Bar (XMB) interface built with React + Vite. Fork it, edit one file, and make it your own.
 
-Currently, two official plugins are available:
+<!-- Add a screenshot or GIF here -->
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+- Animated wave background with surge on launch
+- Per-item splash art backgrounds
+- Markdown document viewer
+- Image gallery with captions
+- Audio and video media player
+- WebGL and web app launcher with loading screen
+- File download manager
+- Glassmorphic side panel and overlays
+- Boot screen animation
+- Keyboard, touch, and `postMessage` controls
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Getting started
 
-## Expanding the ESLint configuration
+```bash
+git clone https://github.com/kofolmarko/xmb-react
+cd xmb-react
+npm install
+npm run dev
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Customisation
+
+Everything is in **`src/manifest.jsx`** — categories, items, boot screen text. The file has a full schema reference at the top, and the running app has a Developer Guide under Settings.
+
+```js
+export const boot = {
+  text: 'Your Name',
+  subText: 'Press any key to start',
+};
+```
+
+### Item types
+
+| Type | Opens |
+|------|-------|
+| `document` | Markdown viewer |
+| `gallery` | Image carousel |
+| `application` | Audio / video / web / WebGL launcher |
+| `download` | Download panel |
+| `folder` | Nested sub-menu |
+
+See `src/manifest.jsx` for the full field reference.
+
+## Controls
+
+| Key | Action |
+|-----|--------|
+| ← → Arrow keys | Switch categories |
+| ↑ ↓ Arrow keys | Navigate items |
+| Enter | Confirm / Open |
+| Escape · Backspace | Back |
+| T | Details panel |
+| B | Cycle brightness |
+| M | Mute |
+
+Touch: swipe left/right to change category, swipe up/down to scroll, tap to confirm.
+
+## Deployment
+
+```bash
+npm run build
+```
+
+Deploy the `dist/` folder to any static host (Vercel, Netlify, GitHub Pages).
+
+## License
+
+MIT — see [LICENSE](./LICENSE).

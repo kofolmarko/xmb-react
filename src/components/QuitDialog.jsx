@@ -1,39 +1,36 @@
 import { useXMB } from '../context/XMBContext';
-import { StatusBar } from './StatusBar';
+import { OverlayHeader } from './OverlayHeader';
 import '../styles/QuitDialog.css';
 
 export function QuitDialog() {
   const { state, hideQuitDialog, executeQuitDialog } = useXMB();
   const selectedIndex = state.quitDialogIndex;
+  const mediaItem = state.showMedia;
 
   const handleSelect = (index) => {
-    if (index === 0) {
-      executeQuitDialog();
-    } else {
-      hideQuitDialog();
-    }
+    if (index === 0) executeQuitDialog();
+    else hideQuitDialog();
   };
 
   return (
     <div className="quit-dialog-overlay">
-      <StatusBar />
+      {mediaItem && <OverlayHeader icon={mediaItem.icon} title={mediaItem.label} />}
       <div className="quit-dialog">
-        <h3 className="quit-dialog-title">Exit</h3>
-        <p className="quit-dialog-message">Do you want to quit the game?</p>
+        <p className="quit-dialog-message">Do you want to quit?</p>
         <div className="quit-dialog-options">
-          <button
+          <div
             className={`quit-option ${selectedIndex === 0 ? 'selected' : ''}`}
             onClick={() => handleSelect(0)}
-          >
-            Yes
-          </button>
-          <button
+          >Yes</div>
+          <div
             className={`quit-option ${selectedIndex === 1 ? 'selected' : ''}`}
             onClick={() => handleSelect(1)}
-          >
-            No
-          </button>
+          >No</div>
         </div>
+      </div>
+      <div className="overlay-hint">
+        <span>✕ Confirm</span>
+        <span>◯ Cancel</span>
       </div>
     </div>
   );
