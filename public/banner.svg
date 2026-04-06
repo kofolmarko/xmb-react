@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0a0e2a"/>
+      <stop offset="100%" stop-color="#0d1b3e"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Wave 1: phase=0, amp=94.5, freq=2.0, #1a3a6e @ 50% -->
+  <path d="M0 630 L0 346 100 368 200 388 300 408 400 426 500 443 600 457 700 469 800 479 900 485 1000 489 1100 490 1200 488 L1200 630 Z"
+    fill="#1a3a6e" opacity="0.5"/>
+
+  <!-- Wave 2: phase=1.5, amp=75.6, freq=1.8, #102850 @ 60% -->
+  <path d="M0 630 L0 514 200 512 400 502 600 486 800 464 1000 438 1200 411 L1200 630 Z"
+    fill="#102850" opacity="0.6"/>
+
+  <!-- Decorative XMB arc line (same wave 1 shape, shifted up into header area) -->
+  <path d="M0 146 100 168 200 188 300 208 400 226 500 243 600 257 700 269 800 279 900 285 1000 289 1100 290 1200 288"
+    fill="none" stroke="#4a9eff" stroke-width="1" opacity="0.15" stroke-linecap="round"/>
+  <path d="M0 160 100 182 200 202 300 222 400 240 500 257 600 271 700 283 800 293 900 299 1000 303 1100 304 1200 302"
+    fill="none" stroke="#4a9eff" stroke-width="0.5" opacity="0.08" stroke-linecap="round"/>
+
+  <!-- XMB nav dots row -->
+  <g opacity="0.35" fill="none" stroke="#4a9eff" stroke-width="1.5">
+    <circle cx="480" cy="390" r="10"/>
+    <circle cx="528" cy="390" r="10"/>
+    <circle cx="672" cy="390" r="10"/>
+    <circle cx="720" cy="390" r="10"/>
+  </g>
+  <!-- Selected item -->
+  <circle cx="600" cy="390" r="13" fill="none" stroke="#4a9eff" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="600" cy="390" r="7" fill="#4a9eff" opacity="0.9"/>
+  <!-- Nav line -->
+  <line x1="320" y1="390" x2="454" y2="390" stroke="#4a9eff" stroke-width="1" opacity="0.2"/>
+  <line x1="746" y1="390" x2="880" y2="390" stroke="#4a9eff" stroke-width="1" opacity="0.2"/>
+
+  <!-- Title -->
+  <text
+    x="600" y="240"
+    font-family="'Michroma', 'Courier New', monospace"
+    font-size="96"
+    font-weight="400"
+    fill="white"
+    text-anchor="middle"
+    letter-spacing="6"
+    opacity="0.95"
+  >react-xmb</text>
+
+  <!-- Subtitle -->
+  <text
+    x="600" y="300"
+    font-family="'Michroma', 'Courier New', monospace"
+    font-size="22"
+    fill="#4a9eff"
+    text-anchor="middle"
+    letter-spacing="4"
+    opacity="0.8"
+  >PSP-STYLE XMB INTERFACE FOR THE WEB</text>
+</svg>
