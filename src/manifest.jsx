@@ -1,5 +1,5 @@
 /**
- * XMB React — manifest.jsx
+ * xmb-react — manifest.jsx
  * ─────────────────────────────────────────────────────────────────────────────
  * This is the single file you need to edit to make XMB your own.
  * Everything — categories, items, boot screen text — is defined here.
@@ -63,7 +63,7 @@ import {
 // ─── Boot screen ─────────────────────────────────────────────────────────────
 
 export const boot = {
-  text: 'react-xmb',
+  text: 'xmb-react',
   subText: 'Press any key to start',
 };
 
@@ -85,7 +85,7 @@ export const categories = [
         action: {
           type: 'details',
           date: '2026',
-          description: `# react-xmb
+          description: `# xmb-react
 
 A PSP-style Cross Media Bar (XMB) interface built with React + Vite.
 
@@ -324,7 +324,7 @@ SOFTWARE.`,
         action: {
           type: 'details',
           date: '2026',
-          description: `# react-xmb
+          description: `# xmb-react
 
 **Version:** 1.0.0
 **Build:** 2026
@@ -680,11 +680,11 @@ Your selection is saved automatically and restored on next visit.`,
         action: {
           type: 'details',
           date: '2026',
-          description: `# XMB React on GitHub
+          description: `# xmb-react on GitHub
 
 **[Open repository →](https://github.com/kofolmarko/xmb-react)**
 
-Source code, issues, and pull requests for XMB React.`,
+Source code, issues, and pull requests for xmb-react.`,
         },
       },
       {

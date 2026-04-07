@@ -1,4 +1,4 @@
-# XMB React System Update v2.0
+# xmb-react System Update v2.0
 
 This is a sample update package for demonstrating the download feature.
 

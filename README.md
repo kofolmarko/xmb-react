@@ -1,6 +1,6 @@
-<img src="public/banner.png" alt="react-xmb" width="100%"/>
+<img src="public/banner.png" alt="xmb-react" width="100%"/>
 
-# react-xmb
+# xmb-react
 
 A PSP-style Cross Media Bar (XMB) interface built with React + Vite. Fork it, edit one file, and make it your own.
 
