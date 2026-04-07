@@ -19,14 +19,14 @@
 .boot-title {
   font-size: clamp(32px, 8vw, 64px);
   font-weight: 700;
-  color: #ffffff;
-  text-shadow: 0 0 20px rgba(100, 150, 255, 0.6);
+  color: var(--white);
+  text-shadow: 0 0 20px var(--accent-blue);
   margin: 0 0 16px;
 }
 
 .boot-subtitle {
   font-size: clamp(12px, 2.5vw, 16px);
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--text-faint);
   margin: 0;
   letter-spacing: 0.05em;
 }

@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useReducer, useCallback, useMemo } from 'react';
 import { categories } from '../manifest';
+import { themeOrder } from '../themes';
 
 const XMBContext = createContext(null);
 
@@ -23,6 +24,8 @@ const initialState = {
   sidePanelActionIndex: 0,
   showQuitDialog: false,
   quitDialogIndex: 0,
+  showThemePicker: false,
+  themePickerIndex: 0,
   isSwitchingCategory: false,
 };
 
@@ -41,6 +44,38 @@ function getContextOptions(item) {
   return options;
 }
 
+function enrichSubItem(siblings, sub) {
+  // Single gallery item → merge all sibling gallery images into one collection
+  if (sub.type === 'gallery' && sub.action?.images?.length === 1) {
+    const singles = siblings.filter(s => s.type === 'gallery' && s.action?.images?.length === 1);
+    if (singles.length > 1) {
+      const allImages = singles.flatMap(s => s.action.images);
+      const startIndex = singles.findIndex(s => s.id === sub.id);
+      return { ...sub, action: { ...sub.action, images: allImages }, startIndex: Math.max(0, startIndex) };
+    }
+  }
+  // Single media item (src, no playlist) → build playlist from same-contentType siblings
+  if (sub.type === 'application' && sub.action?.type === 'media' && sub.action?.src && !sub.action?.playlist) {
+    const ct = sub.action.contentType;
+    const singles = siblings.filter(s =>
+      s.type === 'application' &&
+      s.action?.type === 'media' &&
+      s.action?.contentType === ct &&
+      s.action?.src && !s.action?.playlist
+    );
+    if (singles.length > 1) {
+      const playlist = singles.map(s => ({
+        title: s.label,
+        src: s.action.src,
+        thumbnail: s.thumbnail || s.splashArt || null,
+      }));
+      const startIndex = singles.findIndex(s => s.id === sub.id);
+      return { ...sub, action: { ...sub.action, playlist }, startIndex: Math.max(0, startIndex) };
+    }
+  }
+  return sub;
+}
+
 function activateItem(state, item) {
   if (item.type === 'application') {
     return { ...state, showLoading: true, loadingItem: item, showSidePanel: false, sidePanelMode: null };
@@ -53,6 +88,9 @@ function activateItem(state, item) {
   }
   if (item.type === 'download') {
     return { ...state, showDownloadPanel: true, activeItem: item, showSidePanel: false, sidePanelMode: null };
+  }
+  if (item.type === 'theme') {
+    return { ...state, showThemePicker: true, showSidePanel: false, sidePanelMode: null };
   }
   return { ...state, showSidePanel: true, sidePanelMode: 'info', activeItem: item };
 }
@@ -111,7 +149,7 @@ function reducer(state, action) {
         const item = getCurrentItem(state);
         const sub = item?.subItems?.[state.subMenuIndex];
         if (!sub) return state;
-        return activateItem(state, sub);
+        return activateItem(state, enrichSubItem(item.subItems, sub));
       }
       const item = getCurrentItem(state);
       if (!item) return state;
@@ -123,6 +161,7 @@ function reducer(state, action) {
 
     case 'BACK': {
       if (state.showQuitDialog) return state;
+      if (state.showThemePicker) return { ...state, showThemePicker: false };
       if (state.showMedia) return { ...state, showQuitDialog: true };
       if (state.showDocumentViewer) return { ...state, showDocumentViewer: false, activeItem: null };
       if (state.showGalleryViewer) return { ...state, showGalleryViewer: false, activeItem: null };
@@ -243,6 +282,23 @@ function reducer(state, action) {
       };
     }
 
+    case 'OPEN_THEME_PICKER': {
+      return { ...state, showThemePicker: true, themePickerIndex: action.startIndex, showSidePanel: false, sidePanelMode: null };
+    }
+
+    case 'NAVIGATE_THEME_PICKER': {
+      const next = (state.themePickerIndex + action.direction + themeOrder.length) % themeOrder.length;
+      return { ...state, themePickerIndex: next };
+    }
+
+    case 'SELECT_THEME': {
+      return { ...state, showThemePicker: false, themePickerIndex: 0 };
+    }
+
+    case 'CANCEL_THEME': {
+      return { ...state, showThemePicker: false, themePickerIndex: 0 };
+    }
+
     default:
       return state;
   }
@@ -333,6 +389,25 @@ export function XMBProvider({ children, playSound }) {
     dispatch({ type: 'LOADING_COMPLETE' });
   }, []);
 
+  const openThemePicker = useCallback((startIndex = 0) => {
+    playSound('confirm');
+    dispatch({ type: 'OPEN_THEME_PICKER', startIndex });
+  }, [playSound]);
+
+  const navigateThemePicker = useCallback((direction) => {
+    playSound('cursor');
+    dispatch({ type: 'NAVIGATE_THEME_PICKER', direction });
+  }, [playSound]);
+
+  const selectTheme = useCallback(() => {
+    playSound('confirm');
+    dispatch({ type: 'SELECT_THEME' });
+  }, [playSound]);
+
+  const cancelTheme = useCallback(() => {
+    dispatch({ type: 'CANCEL_THEME' });
+  }, []);
+
   const value = useMemo(() => ({
     state,
     navigateCategory,
@@ -354,7 +429,11 @@ export function XMBProvider({ children, playSound }) {
     loadingComplete,
     getCurrentItem,
     getContextOptions,
-  }), [state, navigateCategory, navigateToCategory, navigateItem, activate, back, openSidePanel, closeSidePanel, openMedia, closeMedia, showQuitDialog, hideQuitDialog, quitMedia, navigateSidePanel, executeSidePanelAction, navigateQuitDialog, executeQuitDialog, loadingComplete]);
+    openThemePicker,
+    navigateThemePicker,
+    selectTheme,
+    cancelTheme,
+  }), [state, navigateCategory, navigateToCategory, navigateItem, activate, back, openSidePanel, closeSidePanel, openMedia, closeMedia, showQuitDialog, hideQuitDialog, quitMedia, navigateSidePanel, executeSidePanelAction, navigateQuitDialog, executeQuitDialog, loadingComplete, openThemePicker, navigateThemePicker, selectTheme, cancelTheme]);
 
   return <XMBContext.Provider value={value}>{children}</XMBContext.Provider>;
 }

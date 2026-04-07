@@ -1,7 +1,7 @@
 .quit-dialog-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: var(--bg-overlay);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   display: flex;
@@ -32,7 +32,7 @@
 
 .quit-dialog-message {
   font-size: 20px;
-  color: rgba(255, 255, 255, 0.95);
+  color: var(--text-bright);
   font-weight: 400;
   letter-spacing: 0.3px;
 }
@@ -44,7 +44,7 @@
 
 .quit-option {
   font-size: 18px;
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--text-dim);
   cursor: pointer;
   transition: color 100ms ease, text-shadow 100ms ease;
   font-weight: 400;
@@ -55,8 +55,8 @@
 }
 
 .quit-option.selected {
-  color: rgba(255, 255, 255, 1);
-  text-shadow: 0 0 14px rgba(255, 255, 255, 0.6);
+  color: var(--text-action-selected);
+  text-shadow: 0 0 14px var(--text-glow);
 }
 
 

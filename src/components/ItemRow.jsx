@@ -34,7 +34,7 @@ export function ItemRow({ item, index, isSelected, isSubOpen, subMenuIndex, sele
           </div>
         )}
         <span className="item-label">{item.label}</span>
-
+        {hasSubItems && <span className="item-sub-arrow">►</span>}
       </button>
 
       {isSelected && isSubOpen && (

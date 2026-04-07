@@ -1,12 +1,10 @@
 import { useXMB } from '../context/XMBContext';
-import { OverlayHeader } from './OverlayHeader';
+import { StatusBar } from './StatusBar';
 import '../styles/QuitDialog.css';
 
 export function QuitDialog() {
   const { state, hideQuitDialog, executeQuitDialog } = useXMB();
   const selectedIndex = state.quitDialogIndex;
-  const mediaItem = state.showMedia;
-
   const handleSelect = (index) => {
     if (index === 0) executeQuitDialog();
     else hideQuitDialog();
@@ -14,7 +12,7 @@ export function QuitDialog() {
 
   return (
     <div className="quit-dialog-overlay">
-      {mediaItem && <OverlayHeader icon={mediaItem.icon} title={mediaItem.label} />}
+      <StatusBar />
       <div className="quit-dialog">
         <p className="quit-dialog-message">Do you want to quit?</p>
         <div className="quit-dialog-options">
@@ -29,8 +27,8 @@ export function QuitDialog() {
         </div>
       </div>
       <div className="overlay-hint">
-        <span>✕ Confirm</span>
-        <span>◯ Cancel</span>
+        <span><span className="ps-icon">×</span> Confirm</span>
+        <span><span className="ps-icon">◯</span> Cancel</span>
       </div>
     </div>
   );

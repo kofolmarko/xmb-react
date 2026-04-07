@@ -1,0 +1,14 @@
+# XMB React System Update v2.0
+
+This is a sample update package for demonstrating the download feature.
+
+## What's New
+- Enhanced UI performance
+- New gallery viewer
+- Document viewer with markdown support
+- Loading animations
+- Improved quit dialog
+
+Version: 2.0.0
+Size: 145 MB
+Release Date: April 5, 2026

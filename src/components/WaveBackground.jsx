@@ -1,16 +1,23 @@
 import { useRef, useEffect } from 'react';
+import { useTheme } from '../context/ThemeContext';
 import '../styles/WaveBackground.css';
 
-export function WaveBackground({ surge }) {
+export function WaveBackground({ surge, themeOverride }) {
+  const { theme } = useTheme();
   const canvasRef = useRef(null);
   const tRef = useRef(0);
   const frameRef = useRef(null);
   const speedRef = useRef(1);
   const surgeRef = useRef(surge);
+  const colorsRef = useRef(themeOverride || theme.wave);
 
   useEffect(() => {
     surgeRef.current = surge;
   }, [surge]);
+
+  useEffect(() => {
+    colorsRef.current = themeOverride || theme.wave;
+  }, [themeOverride, theme.wave]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -53,18 +60,19 @@ export function WaveBackground({ surge }) {
       tRef.current += 0.002 * speedRef.current;
 
       const w = canvas.width, h = canvas.height;
+      const c = colorsRef.current;
 
       const bgGrad = ctx.createLinearGradient(0, 0, 0, h);
-      bgGrad.addColorStop(0, '#0a0e2a');
-      bgGrad.addColorStop(1, '#0d1b3e');
+      bgGrad.addColorStop(0, c.bgTop);
+      bgGrad.addColorStop(1, c.bgBottom);
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, w, h);
 
       const yBase = h * 0.55;
       const amp = h * 0.15;
 
-      drawWave(tRef.current * 0.8, yBase, amp, 2.0, '#1a3a6e', 0.5);
-      drawWave(tRef.current + 1.5, yBase + amp * 0.4, amp * 0.8, 1.8, '#102850', 0.6);
+      drawWave(tRef.current * 0.8, yBase, amp, 2.0, c.wave1, 0.5);
+      drawWave(tRef.current + 1.5, yBase + amp * 0.4, amp * 0.8, 1.8, c.wave2, 0.6);
     }
 
     resize();

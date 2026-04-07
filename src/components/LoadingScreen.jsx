@@ -22,7 +22,7 @@ export function LoadingScreen({ onComplete, item }) {
     <div className="loading-screen">
       {!exiting && (
         <div className="loading-title-wrap">
-          <div className="loading-item-label">{item?.label ?? ''}</div>
+          <div className="loading-item-label">{item?.loadingLabel ?? item?.label ?? ''}</div>
           <div className="loading-item-sub">Now Loading</div>
         </div>
       )}

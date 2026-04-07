@@ -22,9 +22,9 @@
   inset: 0;
   background: linear-gradient(
     135deg,
-    rgba(10, 0, 40, 0.72) 0%,
-    rgba(20, 0, 60, 0.55) 40%,
-    rgba(10, 0, 40, 0.72) 100%
+    var(--splash-overlay-start) 0%,
+    var(--splash-overlay-mid) 40%,
+    var(--splash-overlay-start) 100%
   );
 }
 

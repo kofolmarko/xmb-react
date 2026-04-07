@@ -2,12 +2,12 @@
   position: fixed;
   bottom: 14px;
   left: 16px;
-  z-index: 200;
+  z-index: 270;
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(0, 0, 20, 0.65);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-hud);
+  border: 1px solid var(--border-subtle);
   border-radius: 20px;
   padding: 5px 10px 5px 8px;
   opacity: 0;
@@ -22,13 +22,13 @@
 .hud-icon {
   width: 15px;
   height: 15px;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--text-body);
   flex-shrink: 0;
 }
 
 .hud-pct {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--text-body);
   letter-spacing: 0.02em;
   line-height: 1;
 }

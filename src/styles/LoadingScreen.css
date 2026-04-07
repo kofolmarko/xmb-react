@@ -19,14 +19,14 @@
 .loading-item-label {
   font-size: clamp(24px, 5vw, 44px);
   font-weight: 700;
-  color: #ffffff;
+  color: var(--white);
   letter-spacing: 0.04em;
-  text-shadow: 0 0 30px rgba(100, 160, 255, 0.8), 0 0 60px rgba(80, 120, 255, 0.3);
+  text-shadow: 0 0 30px var(--accent-blue-bright), 0 0 60px var(--accent-blue-soft);
 }
 
 .loading-item-sub {
   font-size: clamp(10px, 1.8vw, 13px);
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--text-muted);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -34,7 +34,7 @@
 .loading-blackout {
   position: fixed;
   inset: 0;
-  background: #000;
+  background: var(--black);
   animation: blackout-in 500ms ease forwards;
   z-index: 251;
 }

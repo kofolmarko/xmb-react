@@ -4,6 +4,14 @@
   box-sizing: border-box;
 }
 
+.ps-icon {
+  font-size: 1.1em;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+}
+
 button, input, select, textarea {
   font-family: inherit;
 }
@@ -16,8 +24,8 @@ html, body, #root {
 
 body {
   font-family: 'Michroma', sans-serif;
-  background: #0d0018;
-  color: #ffffff;
+  background: var(--bg-body);
+  color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

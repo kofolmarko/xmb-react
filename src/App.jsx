@@ -1,6 +1,7 @@
 import { useEffect, useCallback, useRef, useState } from 'react';
 import { useSounds } from './hooks/useSounds';
 import { XMBProvider, useXMB } from './context/XMBContext';
+import { ThemeProvider, useTheme, themeOrder } from './context/ThemeContext';
 import { StatusBar } from './components/StatusBar';
 import { SplashBackground } from './components/SplashBackground';
 import { WaveBackground } from './components/WaveBackground';
@@ -13,6 +14,7 @@ import { LoadingScreen } from './components/LoadingScreen';
 import { DocumentViewer } from './components/DocumentViewer';
 import { GalleryViewer } from './components/GalleryViewer';
 import { DownloadPanel } from './components/DownloadPanel';
+import { ThemePicker } from './components/ThemePicker';
 import { BootScreen } from './components/BootScreen';
 import { HardwareHUD } from './components/HardwareHUD';
 import './App.css';
@@ -21,7 +23,7 @@ const SWIPE_THRESHOLD = 50;
 const TAP_THRESHOLD = 10;
 const BRIGHTNESS_LEVELS = [0.4, 0.7, 1];
 
-function XMBShell({ playSound, menuVisible, bootSurging, onBrightness, onMute, onVolumeUp, onVolumeDown, volume, muted, brightnessIndex }) {
+function XMBShell({ playSound, menuVisible, bootSurging, onBrightness, onMute, onVolumeUp, onVolumeDown, onThemeCycle, volume, muted }) {
   const {
     state,
     navigateCategory,
@@ -38,7 +40,13 @@ function XMBShell({ playSound, menuVisible, bootSurging, onBrightness, onMute, o
     getCurrentItem,
     hideQuitDialog,
     showQuitDialog,
+    navigateThemePicker,
+    selectTheme,
+    cancelTheme,
+    openThemePicker,
   } = useXMB();
+
+  const { commitPreview, revertPreview, themeId } = useTheme();
 
   const touchStartRef = useRef(null);
   const touchStartTimeRef = useRef(0);
@@ -97,8 +105,19 @@ function XMBShell({ playSound, menuVisible, bootSurging, onBrightness, onMute, o
     }
 
     if (state.showGalleryViewer || state.showDownloadPanel) {
-      // These components handle their own input internally
       if (action === 'circle' || action === 'ps') back();
+      return;
+    }
+
+    if (state.showThemePicker) {
+      switch (action) {
+        case 'left':   navigateThemePicker(-1); break;
+        case 'right':  navigateThemePicker(1);  break;
+        case 'cross':
+        case 'start':  commitPreview(); selectTheme();  break;
+        case 'circle':
+        case 'ps':     revertPreview(); cancelTheme();  break;
+      }
       return;
     }
 
@@ -122,18 +141,27 @@ function XMBShell({ playSound, menuVisible, bootSurging, onBrightness, onMute, o
         break;
       case 'right': navigateCategory(1); break;
       case 'cross':
-      case 'start': activate(); break;
+      case 'start': {
+        const item = getCurrentItem(state);
+        if (item?.type === 'theme') {
+          openThemePicker(themeOrder.indexOf(themeId));
+        } else {
+          activate();
+        }
+        break;
+      }
       case 'circle': back(); break;
       case 'triangle': {
-        const item = getCurrentItem(state);
+        const parent = getCurrentItem(state);
+        const item = state.subMenuOpen ? parent?.subItems?.[state.subMenuIndex] : parent;
         if (item && item.type !== 'document') {
-          const mode = item.action?.type === 'media' ? 'actions' : 'info';
-          openSidePanel(mode, item);
+          openSidePanel('info', item);
         }
         break;
       }
       case 'square': {
-        const item = getCurrentItem(state);
+        const parent = getCurrentItem(state);
+        const item = state.subMenuOpen ? parent?.subItems?.[state.subMenuIndex] : parent;
         if (item && item.action?.type === 'media') {
           openSidePanel('actions', item);
         } else if (item && item.type !== 'document') {
@@ -149,7 +177,9 @@ function XMBShell({ playSound, menuVisible, bootSurging, onBrightness, onMute, o
   }, [menuVisible, state, navigateCategory, navigateToCategory, navigateItem,
       activate, back, openSidePanel, navigateSidePanel, executeSidePanelAction,
       navigateQuitDialog, executeQuitDialog, hideQuitDialog, showQuitDialog,
-      getCurrentItem, onBrightness, onMute, onVolumeUp, onVolumeDown]);
+      getCurrentItem, onBrightness, onMute, onVolumeUp, onVolumeDown,
+      navigateThemePicker, selectTheme, cancelTheme, openThemePicker,
+      commitPreview, revertPreview, themeId]);
 
   // postMessage listener for PSP button events from parent iframe
   useEffect(() => {
@@ -183,8 +213,9 @@ function XMBShell({ playSound, menuVisible, bootSurging, onBrightness, onMute, o
       case 'm': case 'M': e.preventDefault(); handlePSPButton('mute');        break;
       case '+': case '=': e.preventDefault(); handlePSPButton('volume_up');   break;
       case '-': case '_': e.preventDefault(); handlePSPButton('volume_down'); break;
+      case 'c': case 'C': e.preventDefault(); onThemeCycle();                 break;
     }
-  }, [menuVisible, handlePSPButton]);
+  }, [menuVisible, handlePSPButton, onThemeCycle]);
 
   const handleTouchStart = useCallback((e) => {
     if (e.touches.length === 1) {
@@ -204,7 +235,7 @@ function XMBShell({ playSound, menuVisible, bootSurging, onBrightness, onMute, o
 
     if (state.showQuitDialog) {
       if (isTap) hideQuitDialog();
-    } else if (state.showMedia || state.showSidePanel || state.showDocumentViewer || state.showGalleryViewer || state.showDownloadPanel) {
+    } else if (state.showMedia || state.showSidePanel || state.showDocumentViewer || state.showGalleryViewer || state.showDownloadPanel || state.showThemePicker) {
       if (isTap && touch.clientX > 100) back();
     } else if (state.subMenuOpen) {
       if (!isTap && distanceMoved > SWIPE_THRESHOLD) {
@@ -232,26 +263,27 @@ function XMBShell({ playSound, menuVisible, bootSurging, onBrightness, onMute, o
   const focusedItem = getCurrentItem(state);
   const splashArt = focusedItem?.splashArt ?? null;
   const overlayOpen = state.showSidePanel || state.showDocumentViewer || state.showGalleryViewer ||
-    state.showDownloadPanel || state.showLoading || !!state.showMedia;
+    state.showDownloadPanel || state.showThemePicker || state.showLoading || !!state.showMedia;
   const iconsVisible = menuVisible && !(overlayOpen && !state.showLoading);
 
   const [showDetailsHint, setShowDetailsHint] = useState(false);
-  const hintTimerRef = useRef(null);
+
+  const effectiveFocused = state.subMenuOpen
+    ? focusedItem?.subItems?.[state.subMenuIndex]
+    : focusedItem;
 
   useEffect(() => {
     setShowDetailsHint(false);
-    clearTimeout(hintTimerRef.current);
-    if (focusedItem && focusedItem.type !== 'document' && !overlayOpen && !state.subMenuOpen) {
-      hintTimerRef.current = setTimeout(() => setShowDetailsHint(true), 1500);
+    if (effectiveFocused && effectiveFocused.type !== 'document' && !overlayOpen) {
+      setShowDetailsHint(true);
     }
-    return () => clearTimeout(hintTimerRef.current);
-  }, [focusedItem?.id, overlayOpen, state.subMenuOpen]);
+  }, [effectiveFocused?.id, overlayOpen, state.subMenuOpen]);
 
   return (
     <div className={`app${state.showLoading ? ' launching' : ''}`}>
       <WaveBackground surge={bootSurging || launchSurging} />
       <SplashBackground splashArt={splashArt} hidden={state.showLoading} />
-      {menuVisible && !overlayOpen && <StatusBar />}
+      {menuVisible && (!overlayOpen || state.showQuitDialog) && <StatusBar />}
 
       <div
         className="xmb-container"
@@ -260,8 +292,8 @@ function XMBShell({ playSound, menuVisible, bootSurging, onBrightness, onMute, o
         onTouchEnd={handleTouchEnd}
       >
         <CategoryRow currentCategory={state.currentCategory} subMenuOpen={state.subMenuOpen} />
-        {showDetailsHint && !state.subMenuOpen && (
-          <div className="xmb-hint">△ Details</div>
+        {showDetailsHint && (
+          <div className="xmb-hint"><span className="ps-icon">△</span> Details</div>
         )}
         <ItemColumn
           currentCategory={state.currentCategory}
@@ -291,6 +323,10 @@ function XMBShell({ playSound, menuVisible, bootSurging, onBrightness, onMute, o
         <DownloadPanel playSound={playSound} />
       )}
 
+      {menuVisible && state.showThemePicker && (
+        <ThemePicker />
+      )}
+
       {menuVisible && state.showLoading && (
         <LoadingScreen onComplete={loadingComplete} item={state.loadingItem} />
       )}
@@ -298,6 +334,9 @@ function XMBShell({ playSound, menuVisible, bootSurging, onBrightness, onMute, o
       {menuVisible && state.showMedia && (
         <MediaPlayer
           item={state.showMedia}
+          volume={volume}
+          muted={muted}
+          keysEnabled={!state.showQuitDialog}
           onQuit={() => {
             if (state.showMedia) {
               playSound('cancel');
@@ -317,7 +356,16 @@ function XMBShell({ playSound, menuVisible, bootSurging, onBrightness, onMute, o
 }
 
 export default function App() {
+  return (
+    <ThemeProvider>
+      <AppInner />
+    </ThemeProvider>
+  );
+}
+
+function AppInner() {
   const { playSound, volume, muted, volumeUp, volumeDown, toggleMute } = useSounds();
+  const { cycleTheme } = useTheme();
   const [booting, setBooting] = useState(true);
   const [menuVisible, setMenuVisible] = useState(false);
   const [bootSurging, setBootSurging] = useState(false);
@@ -340,6 +388,7 @@ export default function App() {
           onMute={toggleMute}
           onVolumeUp={volumeUp}
           onVolumeDown={volumeDown}
+          onThemeCycle={cycleTheme}
           volume={volume}
           muted={muted}
           brightnessIndex={brightnessIndex}

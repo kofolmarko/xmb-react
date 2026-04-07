@@ -22,6 +22,11 @@
  *     icon:      LucideIcon   — icon component from lucide-react
  *     type:      ItemType     — controls how the item is opened (see below)
  *     splashArt: string?      — URL shown as background when item is focused
+ *     details:   Array<{ label: string, value: string }>?
+ *                            — metadata rows shown in the Details side panel
+ *                              e.g. [{ label: 'Artist', value: 'Suno AI' }]
+ *                              Auto-derived info (Type, Format, Images, etc.)
+ *                              is appended automatically for any missing labels.
  *     action:    Action       — what happens when the item is opened
  *   }
  *
@@ -52,7 +57,7 @@ import {
   Wrench, Camera, Music, Film, Gamepad2, Globe, Star,
   FolderOpen, Image, Headphones, Video, Disc, Download,
   Monitor, Gamepad, Info, Wifi, Keyboard, BookOpen, Scale,
-  Code, ExternalLink,
+  Code, ExternalLink, Play, ListMusic, Clapperboard, Images,
 } from 'lucide-react';
 
 // ─── Boot screen ─────────────────────────────────────────────────────────────
@@ -342,6 +347,32 @@ SOFTWARE.`,
 React 19 · Vite · Lucide React · CSS custom properties`,
         },
       },
+      {
+        id: 'set-themes',
+        label: 'Themes',
+        icon: Star,
+        type: 'theme',
+        action: {
+          type: 'details',
+          date: '2026',
+          description: `# Themes
+
+Change the look and feel of the XMB interface.
+
+## Available Themes
+
+- **Midnight** — Deep blue ocean waves (default)
+- **Emerald** — Lush green forest tones
+- **Crimson** — Warm red sunset hues
+- **Gold** — Rich amber and golden light
+
+## How to Switch
+
+Press **C** on your keyboard to cycle through themes.
+
+Your selection is saved automatically and restored on next visit.`,
+        },
+      },
     ],
   },
 
@@ -355,43 +386,64 @@ React 19 · Vite · Lucide React · CSS custom properties`,
       {
         id: 'ph-demo',
         label: 'Demo Gallery',
-        icon: Image,
-        type: 'gallery',
+        icon: Images,
+        type: 'folder',
         splashArt: 'https://picsum.photos/seed/gallery-hero/1280/720',
-        action: {
-          type: 'gallery',
-          images: [
-            { url: 'https://picsum.photos/seed/landscape1/1280/720', caption: 'Mountain valley at dawn' },
-            { url: 'https://picsum.photos/seed/coast1/1280/720',     caption: 'Coastline at golden hour' },
-            { url: 'https://picsum.photos/seed/forest2/1280/720',    caption: 'Forest path in autumn' },
-            { url: 'https://picsum.photos/seed/city2/1280/720',      caption: 'City skyline at night' },
-            { url: 'https://picsum.photos/seed/desert1/1280/720',    caption: 'Sand dunes at sunset' },
-          ],
-        },
+        subItems: [
+          {
+            id: 'ph-demo-all',
+            label: 'View All',
+            loadingLabel: 'Demo Gallery',
+            icon: Play,
+            type: 'gallery',
+            splashArt: 'https://picsum.photos/seed/gallery-hero/1280/720',
+            action: {
+              type: 'gallery',
+              images: [
+                { url: 'https://picsum.photos/seed/landscape1/1280/720', caption: 'Mountain valley at dawn' },
+                { url: 'https://picsum.photos/seed/coast1/1280/720',     caption: 'Coastline at golden hour' },
+                { url: 'https://picsum.photos/seed/forest2/1280/720',    caption: 'Forest path in autumn' },
+                { url: 'https://picsum.photos/seed/city2/1280/720',      caption: 'City skyline at night' },
+                { url: 'https://picsum.photos/seed/desert1/1280/720',    caption: 'Sand dunes at sunset' },
+              ],
+            },
+          },
+          { id: 'ph-1', label: 'Mountain Valley', icon: Image, type: 'gallery', thumbnail: 'https://picsum.photos/seed/landscape1/400/225', splashArt: 'https://picsum.photos/seed/landscape1/1280/720', details: [{ label: 'Caption', value: 'Mountain valley at dawn' }, { label: 'Resolution', value: '1280×720' }, { label: 'Source', value: 'Picsum' }], action: { type: 'gallery', images: [{ url: 'https://picsum.photos/seed/landscape1/1280/720', caption: 'Mountain valley at dawn' }] } },
+          { id: 'ph-2', label: 'Coastline',       icon: Image, type: 'gallery', thumbnail: 'https://picsum.photos/seed/coast1/400/225',     splashArt: 'https://picsum.photos/seed/coast1/1280/720',     details: [{ label: 'Caption', value: 'Coastline at golden hour' }, { label: 'Resolution', value: '1280×720' }, { label: 'Source', value: 'Picsum' }], action: { type: 'gallery', images: [{ url: 'https://picsum.photos/seed/coast1/1280/720',     caption: 'Coastline at golden hour' }] } },
+          { id: 'ph-3', label: 'Forest Path',     icon: Image, type: 'gallery', thumbnail: 'https://picsum.photos/seed/forest2/400/225',    splashArt: 'https://picsum.photos/seed/forest2/1280/720',    details: [{ label: 'Caption', value: 'Forest path in autumn' }, { label: 'Resolution', value: '1280×720' }, { label: 'Source', value: 'Picsum' }], action: { type: 'gallery', images: [{ url: 'https://picsum.photos/seed/forest2/1280/720',    caption: 'Forest path in autumn' }] } },
+          { id: 'ph-4', label: 'City Skyline',    icon: Image, type: 'gallery', thumbnail: 'https://picsum.photos/seed/city2/400/225',      splashArt: 'https://picsum.photos/seed/city2/1280/720',      details: [{ label: 'Caption', value: 'City skyline at night' }, { label: 'Resolution', value: '1280×720' }, { label: 'Source', value: 'Picsum' }], action: { type: 'gallery', images: [{ url: 'https://picsum.photos/seed/city2/1280/720',      caption: 'City skyline at night' }] } },
+          { id: 'ph-5', label: 'Sand Dunes',      icon: Image, type: 'gallery', thumbnail: 'https://picsum.photos/seed/desert1/400/225',    splashArt: 'https://picsum.photos/seed/desert1/1280/720',    details: [{ label: 'Caption', value: 'Sand dunes at sunset' }, { label: 'Resolution', value: '1280×720' }, { label: 'Source', value: 'Picsum' }], action: { type: 'gallery', images: [{ url: 'https://picsum.photos/seed/desert1/1280/720',    caption: 'Sand dunes at sunset' }] } },
+        ],
+        details: [
+          { label: 'Photos',  value: '5' },
+          { label: 'Format',  value: 'JPEG' },
+          { label: 'Source',  value: 'Picsum Photos' },
+        ],
+        action: { type: 'details', description: 'Demo photo collection', date: '' },
       },
       {
         id: 'ph-storage',
         label: 'Memory Stick',
         icon: FolderOpen,
         type: 'folder',
-        splashArt: 'https://picsum.photos/seed/storage-photos/1280/720',
         subItems: [
-          {
-            id: 'ph-storage-a',
-            label: 'Screenshots',
-            icon: Image,
-            type: 'document',
-            action: { type: 'details', description: '## Screenshots\n\nNo screenshots saved yet.', date: '' },
-          },
-          {
-            id: 'ph-storage-b',
-            label: 'Camera Roll',
-            icon: Camera,
-            type: 'document',
-            action: { type: 'details', description: '## Camera Roll\n\nNo photos saved yet.', date: '' },
-          },
+          { id: 'ms-ph-1', label: 'Mountain Valley', icon: Image, type: 'gallery', details: [{ label: 'Caption', value: 'Mountain valley at dawn' }, { label: 'Resolution', value: '1280×720' }, { label: 'Format', value: 'JPEG' }, { label: 'Size', value: '312 KB' }], action: { type: 'gallery', images: [{ url: 'https://picsum.photos/seed/landscape1/1280/720', caption: 'Mountain valley at dawn' }] } },
+          { id: 'ms-ph-2', label: 'Coastline',       icon: Image, type: 'gallery', details: [{ label: 'Caption', value: 'Coastline at golden hour' }, { label: 'Resolution', value: '1280×720' }, { label: 'Format', value: 'JPEG' }, { label: 'Size', value: '287 KB' }], action: { type: 'gallery', images: [{ url: 'https://picsum.photos/seed/coast1/1280/720',     caption: 'Coastline at golden hour' }] } },
+          { id: 'ms-ph-3', label: 'Forest Path',     icon: Image, type: 'gallery', details: [{ label: 'Caption', value: 'Forest path in autumn' }, { label: 'Resolution', value: '1280×720' }, { label: 'Format', value: 'JPEG' }, { label: 'Size', value: '341 KB' }], action: { type: 'gallery', images: [{ url: 'https://picsum.photos/seed/forest2/1280/720',    caption: 'Forest path in autumn' }] } },
+          { id: 'ms-ph-4', label: 'City Skyline',    icon: Image, type: 'gallery', details: [{ label: 'Caption', value: 'City skyline at night' }, { label: 'Resolution', value: '1280×720' }, { label: 'Format', value: 'JPEG' }, { label: 'Size', value: '298 KB' }], action: { type: 'gallery', images: [{ url: 'https://picsum.photos/seed/city2/1280/720',      caption: 'City skyline at night' }] } },
+          { id: 'ms-ph-5', label: 'Sand Dunes',      icon: Image, type: 'gallery', details: [{ label: 'Caption', value: 'Sand dunes at sunset' }, { label: 'Resolution', value: '1280×720' }, { label: 'Format', value: 'JPEG' }, { label: 'Size', value: '264 KB' }], action: { type: 'gallery', images: [{ url: 'https://picsum.photos/seed/desert1/1280/720',    caption: 'Sand dunes at sunset' }] } },
+          { id: 'ms-ph-6', label: 'Aurora Borealis', icon: Image, type: 'gallery', details: [{ label: 'Caption', value: 'Aurora borealis' },         { label: 'Resolution', value: '1280×720' }, { label: 'Format', value: 'JPEG' }, { label: 'Size', value: '319 KB' }], action: { type: 'gallery', images: [{ url: 'https://picsum.photos/seed/aurora1/1280/720',   caption: 'Aurora borealis' }] } },
+          { id: 'ms-ph-7', label: 'Snowy Mountain',  icon: Image, type: 'gallery', details: [{ label: 'Caption', value: 'Snowy mountain peak' },     { label: 'Resolution', value: '1280×720' }, { label: 'Format', value: 'JPEG' }, { label: 'Size', value: '278 KB' }], action: { type: 'gallery', images: [{ url: 'https://picsum.photos/seed/snow-mt/1280/720',   caption: 'Snowy mountain peak' }] } },
+          { id: 'ms-ph-8', label: 'Ocean Waves',     icon: Image, type: 'gallery', details: [{ label: 'Caption', value: 'Ocean waves at dusk' },     { label: 'Resolution', value: '1280×720' }, { label: 'Format', value: 'JPEG' }, { label: 'Size', value: '305 KB' }], action: { type: 'gallery', images: [{ url: 'https://picsum.photos/seed/ocean-w/1280/720',   caption: 'Ocean waves at dusk' }] } },
+          { id: 'ms-ph-9', label: 'Ancient Ruins',   icon: Image, type: 'gallery', details: [{ label: 'Caption', value: 'Ancient ruins' },           { label: 'Resolution', value: '1280×720' }, { label: 'Format', value: 'JPEG' }, { label: 'Size', value: '293 KB' }], action: { type: 'gallery', images: [{ url: 'https://picsum.photos/seed/ruins1/1280/720',    caption: 'Ancient ruins' }] } },
         ],
-        action: { type: 'details', description: 'Photos on storage', date: '' },
+        details: [
+          { label: 'Type',      value: 'Memory Stick PRO Duo' },
+          { label: 'Capacity',  value: '2 GB' },
+          { label: 'Free',      value: '1.99 GB' },
+          { label: 'Photos',    value: '9' },
+        ],
+        action: { type: 'details', description: 'Images on storage', date: '' },
       },
     ],
   },
@@ -404,44 +456,62 @@ React 19 · Vite · Lucide React · CSS custom properties`,
     defaultIndex: 0,
     items: [
       {
-        id: 'mu-demo',
-        label: 'Demo Track',
-        icon: Headphones,
-        type: 'application',
-        splashArt: 'https://picsum.photos/seed/music-cover/1280/720',
-        action: {
-          type: 'media',
-          contentType: 'audio',
-          src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-        },
+        id: 'mu-collection',
+        label: 'Demo Playlist',
+        icon: ListMusic,
+        type: 'folder',
+        splashArt: 'https://picsum.photos/seed/music-t1/400/400',
+        subItems: [
+          {
+            id: 'mu-all',
+            label: 'Play All',
+            loadingLabel: 'Demo Playlist',
+            icon: Play,
+            type: 'application',
+            splashArt: 'https://picsum.photos/seed/music-t1/400/400',
+            action: {
+              type: 'media',
+              contentType: 'audio',
+              playlist: [
+                { title: 'Cozy Snowfall Dream', src: '/music/Cozy_Snowfall_Dream.mp3', thumbnail: 'https://picsum.photos/seed/music-t1/400/400' },
+                { title: 'Floating Home',       src: '/music/Floating_Home.mp3',        thumbnail: 'https://picsum.photos/seed/music-t2/400/400' },
+                { title: 'Mango Postcard',      src: '/music/Mango_Postcard.mp3',       thumbnail: 'https://picsum.photos/seed/music-t3/400/400' },
+                { title: 'Serene Groove Vibes', src: '/music/Serene_Groove_Vibes.mp3',  thumbnail: 'https://picsum.photos/seed/music-t4/400/400' },
+              ],
+            },
+          },
+          { id: 'mu-t1', label: 'Cozy Snowfall Dream', icon: Music, type: 'application', thumbnail: 'https://picsum.photos/seed/music-t1/400/400', splashArt: 'https://picsum.photos/seed/music-t1/400/400', details: [{ label: 'Artist', value: 'Suno AI' }, { label: 'Genre', value: 'Ambient' },   { label: 'Duration', value: '2:31' }, { label: 'Format', value: 'MP3' }, { label: 'Year', value: '2026' }], action: { type: 'media', contentType: 'audio', src: '/music/Cozy_Snowfall_Dream.mp3' } },
+          { id: 'mu-t2', label: 'Floating Home',       icon: Music, type: 'application', thumbnail: 'https://picsum.photos/seed/music-t2/400/400', splashArt: 'https://picsum.photos/seed/music-t2/400/400', details: [{ label: 'Artist', value: 'Suno AI' }, { label: 'Genre', value: 'Lo-fi' },     { label: 'Duration', value: '2:48' }, { label: 'Format', value: 'MP3' }, { label: 'Year', value: '2026' }], action: { type: 'media', contentType: 'audio', src: '/music/Floating_Home.mp3' } },
+          { id: 'mu-t3', label: 'Mango Postcard',      icon: Music, type: 'application', thumbnail: 'https://picsum.photos/seed/music-t3/400/400', splashArt: 'https://picsum.photos/seed/music-t3/400/400', details: [{ label: 'Artist', value: 'Suno AI' }, { label: 'Genre', value: 'Tropical' }, { label: 'Duration', value: '2:14' }, { label: 'Format', value: 'MP3' }, { label: 'Year', value: '2026' }], action: { type: 'media', contentType: 'audio', src: '/music/Mango_Postcard.mp3' } },
+          { id: 'mu-t4', label: 'Serene Groove Vibes', icon: Music, type: 'application', thumbnail: 'https://picsum.photos/seed/music-t4/400/400', splashArt: 'https://picsum.photos/seed/music-t4/400/400', details: [{ label: 'Artist', value: 'Suno AI' }, { label: 'Genre', value: 'Chillout' }, { label: 'Duration', value: '3:02' }, { label: 'Format', value: 'MP3' }, { label: 'Year', value: '2026' }], action: { type: 'media', contentType: 'audio', src: '/music/Serene_Groove_Vibes.mp3' } },
+        ],
+        details: [
+          { label: 'Tracks',    value: '4' },
+          { label: 'Duration',  value: '10:35' },
+          { label: 'Format',    value: 'MP3' },
+          { label: 'Artist',    value: 'Suno AI' },
+        ],
+        action: { type: 'details', description: 'Demo music playlist', date: '' },
       },
       {
         id: 'mu-storage',
         label: 'Memory Stick',
         icon: FolderOpen,
         type: 'folder',
-        splashArt: 'https://picsum.photos/seed/music-storage/1280/720',
         subItems: [
-          {
-            id: 'mu-storage-a',
-            label: 'Playlist 1',
-            icon: Music,
-            type: 'application',
-            action: {
-              type: 'media',
-              contentType: 'audio',
-              src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-            },
-          },
-          {
-            id: 'mu-storage-b',
-            label: 'Artists',
-            icon: Headphones,
-            type: 'document',
-            action: { type: 'details', description: '## Artists\n\nNo music saved yet.', date: '' },
-          },
+          { id: 'mu-s-t1', label: 'Cozy Snowfall Dream', icon: Music, type: 'application', details: [{ label: 'Artist', value: 'Suno AI' }, { label: 'Genre', value: 'Ambient' },   { label: 'Duration', value: '2:31' }, { label: 'Format', value: 'MP3' }, { label: 'Size', value: '2.4 MB' }], action: { type: 'media', contentType: 'audio', src: '/music/Cozy_Snowfall_Dream.mp3' } },
+          { id: 'mu-s-t2', label: 'Floating Home',       icon: Music, type: 'application', details: [{ label: 'Artist', value: 'Suno AI' }, { label: 'Genre', value: 'Lo-fi' },     { label: 'Duration', value: '2:48' }, { label: 'Format', value: 'MP3' }, { label: 'Size', value: '2.7 MB' }], action: { type: 'media', contentType: 'audio', src: '/music/Floating_Home.mp3' } },
+          { id: 'mu-s-t3', label: 'Mango Postcard',      icon: Music, type: 'application', details: [{ label: 'Artist', value: 'Suno AI' }, { label: 'Genre', value: 'Tropical' }, { label: 'Duration', value: '2:14' }, { label: 'Format', value: 'MP3' }, { label: 'Size', value: '2.1 MB' }], action: { type: 'media', contentType: 'audio', src: '/music/Mango_Postcard.mp3' } },
+          { id: 'mu-s-t4', label: 'Serene Groove Vibes', icon: Music, type: 'application', details: [{ label: 'Artist', value: 'Suno AI' }, { label: 'Genre', value: 'Chillout' }, { label: 'Duration', value: '3:02' }, { label: 'Format', value: 'MP3' }, { label: 'Size', value: '2.9 MB' }], action: { type: 'media', contentType: 'audio', src: '/music/Serene_Groove_Vibes.mp3' } },
         ],
-        action: { type: 'details', description: 'Music on storage', date: '' },
+        details: [
+          { label: 'Type',      value: 'Memory Stick PRO Duo' },
+          { label: 'Capacity',  value: '2 GB' },
+          { label: 'Free',      value: '1.99 GB' },
+          { label: 'Tracks',    value: '4' },
+          { label: 'Used',      value: '10.1 MB' },
+        ],
+        action: { type: 'details', description: 'Music files on storage', date: '' },
       },
     ],
   },
@@ -454,33 +524,56 @@ React 19 · Vite · Lucide React · CSS custom properties`,
     defaultIndex: 0,
     items: [
       {
-        id: 'vi-demo',
-        label: 'Big Buck Bunny',
-        icon: Video,
-        type: 'application',
-        splashArt: 'https://picsum.photos/seed/cinema-bbb/1280/720',
-        action: {
-          type: 'media',
-          contentType: 'video',
-          src: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-        },
+        id: 'vi-nature',
+        label: 'Nature Collection',
+        icon: Clapperboard,
+        type: 'folder',
+        splashArt: 'https://picsum.photos/seed/calm-lake-trees/400/225',
+        subItems: [
+          {
+            id: 'vi-nature-all',
+            label: 'Play All',
+            loadingLabel: 'Nature Collection',
+            icon: Play,
+            type: 'application',
+            splashArt: 'https://picsum.photos/seed/calm-lake-trees/400/225',
+            action: {
+              type: 'media',
+              contentType: 'video',
+              playlist: [
+                { title: 'Calm Lake Trees', src: '/video/Calm_Lake_Trees.mp4',          thumbnail: 'https://picsum.photos/seed/calm-lake-trees/400/225' },
+                { title: 'Tranquil Forest', src: '/video/Tranquil_Forest_Sunny_Day.mp4', thumbnail: 'https://picsum.photos/seed/tranquil-forest-sunny/400/225' },
+              ],
+            },
+          },
+          { id: 'vi-calm',   label: 'Calm Lake Trees', icon: Video, type: 'application', thumbnail: 'https://picsum.photos/seed/calm-lake-trees/400/225',      splashArt: 'https://picsum.photos/seed/calm-lake-trees/400/225',      details: [{ label: 'Duration', value: '0:30' }, { label: 'Resolution', value: '1920×1080' }, { label: 'Genre', value: 'Nature' }, { label: 'Format', value: 'MP4' }, { label: 'Source', value: 'Pexels' }], action: { type: 'media', contentType: 'video', src: '/video/Calm_Lake_Trees.mp4' } },
+          { id: 'vi-forest', label: 'Tranquil Forest', icon: Video, type: 'application', thumbnail: 'https://picsum.photos/seed/tranquil-forest-sunny/400/225', splashArt: 'https://picsum.photos/seed/tranquil-forest-sunny/400/225', details: [{ label: 'Duration', value: '0:28' }, { label: 'Resolution', value: '1920×1080' }, { label: 'Genre', value: 'Nature' }, { label: 'Format', value: 'MP4' }, { label: 'Source', value: 'Pexels' }], action: { type: 'media', contentType: 'video', src: '/video/Tranquil_Forest_Sunny_Day.mp4' } },
+        ],
+        details: [
+          { label: 'Videos',      value: '2' },
+          { label: 'Duration',    value: '0:58' },
+          { label: 'Format',      value: 'MP4' },
+          { label: 'Resolution',  value: '1920×1080' },
+        ],
+        action: { type: 'details', description: 'Nature video collection', date: '' },
       },
       {
         id: 'vi-storage',
         label: 'Memory Stick',
         icon: FolderOpen,
         type: 'folder',
-        splashArt: 'https://picsum.photos/seed/video-storage/1280/720',
         subItems: [
-          {
-            id: 'vi-storage-a',
-            label: 'Clips',
-            icon: Video,
-            type: 'document',
-            action: { type: 'details', description: '## Clips\n\nNo videos saved yet.', date: '' },
-          },
+          { id: 'vi-s-calm',   label: 'Calm Lake Trees', icon: Video, type: 'application', details: [{ label: 'Duration', value: '0:30' }, { label: 'Resolution', value: '1920×1080' }, { label: 'Genre', value: 'Nature' }, { label: 'Format', value: 'MP4' }, { label: 'Size', value: '48 MB' }],  action: { type: 'media', contentType: 'video', src: '/video/Calm_Lake_Trees.mp4' } },
+          { id: 'vi-s-forest', label: 'Tranquil Forest', icon: Video, type: 'application', details: [{ label: 'Duration', value: '0:28' }, { label: 'Resolution', value: '1920×1080' }, { label: 'Genre', value: 'Nature' }, { label: 'Format', value: 'MP4' }, { label: 'Size', value: '43 MB' }],  action: { type: 'media', contentType: 'video', src: '/video/Tranquil_Forest_Sunny_Day.mp4' } },
         ],
-        action: { type: 'details', description: 'Videos on storage', date: '' },
+        details: [
+          { label: 'Type',      value: 'Memory Stick PRO Duo' },
+          { label: 'Capacity',  value: '4 GB' },
+          { label: 'Free',      value: '3.91 GB' },
+          { label: 'Videos',    value: '2' },
+          { label: 'Used',      value: '91 MB' },
+        ],
+        action: { type: 'details', description: 'Video files on storage', date: '' },
       },
     ],
   },
@@ -497,7 +590,6 @@ React 19 · Vite · Lucide React · CSS custom properties`,
         label: 'Memory Stick',
         icon: FolderOpen,
         type: 'folder',
-        splashArt: 'https://picsum.photos/seed/gamesave/1280/720',
         subItems: [
           {
             id: 'gm-storage-a',
@@ -523,6 +615,13 @@ React 19 · Vite · Lucide React · CSS custom properties`,
             },
           },
         ],
+        details: [
+          { label: 'Type',       value: 'Memory Stick PRO Duo' },
+          { label: 'Capacity',   value: '2 GB' },
+          { label: 'Free',       value: '2.00 GB' },
+          { label: 'Save Files', value: '1' },
+          { label: 'Used',       value: '156 KB' },
+        ],
         action: { type: 'details', description: 'Data on storage', date: '' },
       },
       {
@@ -530,12 +629,36 @@ React 19 · Vite · Lucide React · CSS custom properties`,
         label: 'Gamabunta',
         icon: Disc,
         type: 'application',
-        thumbnail: 'https://picsum.photos/seed/gamabunta/200/120',
-        splashArt: 'https://picsum.photos/seed/gamabunta/1280/720',
+        thumbnail: '/thumbnails/gamabunta-thumb.png',
+        splashArt: '/splasharts/gamabunta.png',
+        details: [
+          { label: 'Genre',     value: 'Action' },
+          { label: 'Platform',  value: 'WebGL' },
+          { label: 'Developer', value: 'Marko Kofol' },
+          { label: 'Year',      value: '2021' },
+        ],
         action: {
           type: 'media',
           contentType: 'webgl',
           src: 'https://web-gl-gamabunta.vercel.app/',
+        },
+      },
+      {
+        id: 'gm-obkavici',
+        label: 'Ob Kavici',
+        icon: Globe,
+        type: 'application',
+        thumbnail: 'https://obkavici.si/opengraph-image',
+        splashArt: 'https://obkavici.si/opengraph-image',
+        details: [
+          { label: 'Type',    value: 'Web App' },
+          { label: 'Source',  value: 'obkavici.si' },
+          { label: 'Year',    value: '2026' },
+        ],
+        action: {
+          type: 'media',
+          contentType: 'web',
+          src: 'https://www.obkavici.si/',
         },
       },
     ],

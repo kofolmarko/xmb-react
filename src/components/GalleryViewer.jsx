@@ -7,7 +7,7 @@ export function GalleryViewer({ playSound }) {
   const { state, back } = useXMB();
   const item = state.activeItem;
   const images = item?.action?.images || [];
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(item?.startIndex ?? 0);
 
   const handleClose = useCallback(() => {
     playSound('cancel');
@@ -69,7 +69,7 @@ export function GalleryViewer({ playSound }) {
 
       <div className="gallery-footer">
         <div className="gallery-counter">{currentIndex + 1} / {images.length}</div>
-        <div className="overlay-hint" style={{ position: 'static' }}><span>◯ Back</span></div>
+        <div className="overlay-hint" style={{ position: 'static' }}><span><span className="ps-icon">◯</span> Back</span></div>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 .document-viewer-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: var(--bg-overlay);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   display: flex;
@@ -35,7 +35,7 @@
 .document-title {
   font-size: 22px;
   font-weight: 400;
-  color: rgba(255, 255, 255, 0.95);
+  color: var(--text-bright);
   letter-spacing: 0.5px;
   text-align: center;
   padding-bottom: 20px;
@@ -45,7 +45,7 @@
 .document-content {
   flex: 1;
   overflow-y: auto;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--text-body);
   line-height: 1.7;
   font-size: 15px;
   padding-bottom: 20px;
@@ -61,14 +61,14 @@
 }
 
 .document-content::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.25);
+  background: var(--border-scrollbar);
   border-radius: 2px;
 }
 
 .document-content h1,
 .document-content h2,
 .document-content h3 {
-  color: rgba(255, 255, 255, 0.95);
+  color: var(--text-bright);
   margin-top: 20px;
   margin-bottom: 12px;
   font-weight: 500;
@@ -89,7 +89,7 @@
 .document-content li { margin-bottom: 6px; }
 
 .document-content code {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--bg-code-inline);
   padding: 2px 6px;
   border-radius: 3px;
   font-family: monospace;
@@ -97,7 +97,7 @@
 }
 
 .document-content pre {
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--bg-code);
   padding: 12px;
   overflow-x: auto;
   margin-bottom: 14px;
@@ -109,15 +109,15 @@
 }
 
 .document-content blockquote {
-  border-left: 2px solid rgba(255, 255, 255, 0.4);
+  border-left: 2px solid var(--border-blockquote);
   padding-left: 12px;
   margin: 14px 0;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-mid);
   font-style: italic;
 }
 
 .document-content a {
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--text-link);
   text-decoration: underline;
 }
 
@@ -129,7 +129,7 @@
 
 .document-content hr {
   border: none;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-top: 1px solid var(--border-hr);
   margin: 20px 0;
 }
 

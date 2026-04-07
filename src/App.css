@@ -30,10 +30,17 @@
   bottom: 20px;
   right: 24px;
   font-size: 16px;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--text-secondary);
   letter-spacing: 0.5px;
   pointer-events: none;
   z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0,0,0,0.18);
+  padding: 4px 10px;
+  border-radius: 4px;
+  backdrop-filter: blur(4px);
 }
 
 .xmb-container {

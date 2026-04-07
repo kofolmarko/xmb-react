@@ -1,7 +1,7 @@
 .gallery-viewer-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: var(--bg-overlay);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   display: flex;
@@ -54,7 +54,7 @@
 
 .gallery-caption {
   font-size: 15px;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--text-mid);
   text-align: center;
 }
 
@@ -62,7 +62,7 @@
   flex-shrink: 0;
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--text-secondary);
   font-size: 20px;
   cursor: pointer;
   padding: 12px;
@@ -71,7 +71,7 @@
 }
 
 .gallery-arrow:hover {
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--text-bright);
 }
 
 /* Footer: counter  ◯ Back */
@@ -85,7 +85,7 @@
 
 .gallery-counter {
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--text-secondary);
   letter-spacing: 1px;
 }
 

@@ -116,8 +116,8 @@ export function DownloadPanel({ playSound }) {
         </div>
       </div>
       <div className="overlay-hint">
-        <span>✕ Confirm</span>
-        <span>◯ Back</span>
+        <span><span className="ps-icon">×</span> Confirm</span>
+        <span><span className="ps-icon">◯</span> Back</span>
       </div>
     </div>
   );
